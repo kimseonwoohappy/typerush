@@ -821,6 +821,77 @@
   <button class="intro-start-btn" id="login-btn" style="margin-bottom:10px;">로 그 인</button>
   <button class="auth-link" id="goto-signup-btn">회원가입하기</button>
   <button class="guest-btn" id="guest-play-btn">GUEST PLAY</button>
+  <button class="auth-link" id="how-to-use-btn" style="margin-top:14px;font-size:14px;letter-spacing:1px;">📖 HOW TO USE</button>
+</div>
+
+<!-- 사용법 모달 -->
+<div id="howto-modal" style="display:none;position:fixed;inset:0;z-index:320;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:20px;">
+  <div style="background:#10101a;border:2px solid var(--accent);border-radius:18px;padding:32px 30px;width:min(560px,94%);max-height:86vh;overflow-y:auto;">
+    <div style="text-align:center;margin-bottom:22px;">
+      <div style="font-size:42px;margin-bottom:6px;">📖</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:3px;color:var(--accent);">HOW TO USE</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.4);font-family:'Rajdhani',sans-serif;letter-spacing:1px;">타입러시 사용 설명서</div>
+    </div>
+
+    <div style="font-family:'Rajdhani',sans-serif;font-size:15px;line-height:1.75;color:rgba(255,255,255,0.8);">
+
+      <div style="margin-bottom:18px;">
+        <div style="color:var(--accent);font-weight:700;font-size:16px;letter-spacing:1px;margin-bottom:6px;">🎮 게임 모드</div>
+        <div style="padding-left:6px;">
+          <b style="color:#fff;">PRACTICE</b> — 자유롭게 타자 연습. 시간과 난이도를 고를 수 있어요.<br>
+          <b style="color:#fff;">BREAK THE RECORD</b> — 기록 도전 모드. 전 세계 랭킹에 등록됩니다.<br>
+          <b style="color:#fff;">RACING</b> — 친구와 실시간 온라인 대전!<br>
+          <b style="color:#fff;">SHOP</b> — 모은 코인으로 아이템과 테마를 구매해요.
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <div style="color:var(--accent);font-weight:700;font-size:16px;letter-spacing:1px;margin-bottom:6px;">🏎️ 레이싱 하는 법</div>
+        <div style="padding-left:6px;">
+          1. RACING 선택 후 <b style="color:#fff;">MAKE ROOM</b>(방 만들기) 또는 <b style="color:#fff;">JOIN ROOM</b>(참가하기)<br>
+          2. 방을 만들면 <b style="color:#fff;">4자리 코드</b>가 나와요. 친구에게 알려주세요.<br>
+          3. 친구는 JOIN ROOM에서 그 코드를 입력하면 참가!<br>
+          4. 3-2-1 카운트다운 후 시작 — 문장을 정확히 칠수록 차가 빨리 달려요.<br>
+          5. <b style="color:#fff;">3바퀴(3랩)</b>를 먼저 완주하면 승리 🏆
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <div style="color:var(--accent);font-weight:700;font-size:16px;letter-spacing:1px;margin-bottom:6px;">🪙 코인 모으기</div>
+        <div style="padding-left:6px;">
+          단어를 <b style="color:#fff;">연속으로 맞힐수록</b> 더 많은 코인을 받아요.<br>
+          5연속 🔥 · 10연속 ⚡ · 20연속 💥 — 콤보를 이어가세요!<br>
+          친구에게 코인을 <b style="color:#fff;">선물</b>할 수도 있어요.
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <div style="color:var(--accent);font-weight:700;font-size:16px;letter-spacing:1px;margin-bottom:6px;">🛒 상점 아이템</div>
+        <div style="padding-left:6px;">
+          <b style="color:#fff;">⚡ Speed Boost</b> (1000) — 레이싱 카운트다운 중 사용하면 속도 2배!<br>
+          <b style="color:#fff;">⏱️ Stop Time</b> (1000) — 스톱워치를 20초간 멈춰요.<br>
+          <b style="color:#fff;">🚗 자동차 · 🎨 색상</b> — 나만의 테마로 꾸며보세요.
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <div style="color:var(--accent);font-weight:700;font-size:16px;letter-spacing:1px;margin-bottom:6px;">👥 친구와 함께</div>
+        <div style="padding-left:6px;">
+          모드 선택 화면 아래 <b style="color:#fff;">👤 내 프로필</b> → <b style="color:#fff;">👥 친구 목록</b><br>
+          친구 ID를 입력해 추가하고, 온라인인 친구에게 <b style="color:#fff;">도전장</b>을 보내보세요!<br>
+          친구를 누르면 🏎️ 레이싱 도전 · 🪙 코인 주기를 할 수 있어요.
+        </div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,rgba(255,215,0,0.12),rgba(255,215,0,0.04));border:2px solid #ffd700;border-radius:14px;padding:18px;text-align:center;margin-top:22px;">
+        <div style="font-size:32px;margin-bottom:4px;">🎁</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:#ffd700;">처음 로그인하면 10코인!!</div>
+      </div>
+
+    </div>
+
+    <button id="howto-close-btn" style="width:100%;margin-top:22px;padding:13px;background:#0e0e16;border:2px solid var(--accent);border-radius:12px;color:var(--accent);font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;">닫기</button>
+  </div>
 </div>
 
 <div id="signup-screen">
@@ -1755,6 +1826,17 @@ document.getElementById('login-pw').addEventListener('keydown', (e)=>{
   if (e.key==='Enter') document.getElementById('login-btn').click();
 });
 
+// How to Use 모달
+document.getElementById('how-to-use-btn').addEventListener('click', ()=>{
+  document.getElementById('howto-modal').style.display = 'flex';
+});
+document.getElementById('howto-close-btn').addEventListener('click', ()=>{
+  document.getElementById('howto-modal').style.display = 'none';
+});
+document.getElementById('howto-modal').addEventListener('click', (e)=>{
+  if (e.target.id === 'howto-modal') document.getElementById('howto-modal').style.display = 'none';
+});
+
 document.getElementById('goto-signup-btn').addEventListener('click', ()=>{
   loginScreen.classList.remove('show');
   signupScreen.classList.add('show');
@@ -1770,9 +1852,9 @@ document.getElementById('signup-btn').addEventListener('click', ()=>{
   if (pw.length < 4) { errEl.textContent = '비밀번호는 4자 이상이어야 합니다'; return; }
   const users = loadUsers();
   if (users[id]) { errEl.textContent = '이미 존재하는 아이디입니다'; return; }
-  users[id] = { pw, coins: 0 };
+  users[id] = { pw, coins: 10 };  // 신규 가입 보너스 10코인
   saveUsers(users);
-  currentUser = { id, coins: 0 };
+  currentUser = { id, coins: 10 };
   playerName = id;
   errEl.textContent = '';
   signupScreen.classList.remove('show');
@@ -1780,6 +1862,7 @@ document.getElementById('signup-btn').addEventListener('click', ()=>{
   updateCoinDisplay();
   if (window.updateProfileBtn) window.updateProfileBtn();
   if (window.__initSocialForUser) window.__initSocialForUser();
+  setTimeout(()=>{ if (window.flash) window.flash('🎁 가입 축하! 10코인을 받았습니다','#ffd700'); }, 400);
 });
 document.getElementById('signup-pw').addEventListener('keydown', (e)=>{ if (e.key==='Enter') document.getElementById('signup-btn').click(); });
 document.getElementById('signup-back-btn').addEventListener('click', ()=>{ signupScreen.classList.remove('show'); loginScreen.classList.add('show'); });
