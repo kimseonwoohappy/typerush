@@ -4328,6 +4328,177 @@ updateIntroCarDisplay();
 
 })();
 /* ═══════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════════
+   서버 정지(점검 모드) 실시간 수신
+   ─────────────────────────────────────────────────────────────────────
+   admin 패널에서 server_status.locked 를 켜면 게스트를 포함한
+   모든 접속자가 즉시 차단되고, 다시 끄면 즉시 복구된다.
+   기존 코드는 건드리지 않고 이 블록만 추가로 동작한다.
+   ══════════════════════════════════════════════════════════════════════ */
+(function ServerLock(){
+  'use strict';
+
+  let locked      = false;
+  let overlay     = null;
+  let sinceTs     = 0;
+  let tickTimer   = null;
+
+  // 정지 직전의 게임 상태를 기억했다가 복구할 때 되돌린다
+  let pausedTimer = false;
+  let pausedSw    = false;
+  let swPauseAt   = 0;
+  let inputWasOn  = false;
+
+  /* ── 스타일 주입 ── */
+  const style = document.createElement('style');
+  style.textContent = [
+    '#srv-lock{position:fixed;inset:0;z-index:999999;display:none;flex-direction:column;',
+    'align-items:center;justify-content:center;background:rgba(5,5,9,0.94);',
+    'backdrop-filter:blur(8px);text-align:center;padding:24px;}',
+    '#srv-lock.on{display:flex;}',
+    '#srv-lock .srv-ico{font-size:64px;margin-bottom:18px;animation:srvBlink 1.6s ease-in-out infinite;}',
+    '#srv-lock .srv-title{font-family:"Bebas Neue",sans-serif;font-size:clamp(38px,7vw,68px);',
+    'letter-spacing:6px;color:#ff4466;text-shadow:0 0 26px rgba(255,68,102,0.45);margin-bottom:10px;}',
+    '#srv-lock .srv-sub{font-family:"Rajdhani",sans-serif;font-size:17px;letter-spacing:1px;',
+    'color:rgba(255,255,255,0.62);line-height:1.75;max-width:460px;}',
+    '#srv-lock .srv-meta{margin-top:22px;font-family:"JetBrains Mono",monospace;font-size:12px;',
+    'color:rgba(255,255,255,0.3);}',
+    '#srv-lock .srv-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff4466;',
+    'margin-right:8px;animation:srvBlink 1.2s ease-in-out infinite;}',
+    '@keyframes srvBlink{0%,100%{opacity:1;}50%{opacity:0.25;}}'
+  ].join('');
+  document.head.appendChild(style);
+
+  /* ── 오버레이 ── */
+  function ensureOverlay(){
+    if (overlay && document.body.contains(overlay)) return overlay;
+    overlay = document.createElement('div');
+    overlay.id = 'srv-lock';
+    overlay.innerHTML =
+      '<div class="srv-ico">🛑</div>' +
+      '<div class="srv-title">SERVER STOPPED</div>' +
+      '<div class="srv-sub">관리자가 서버를 정지했습니다.<br>' +
+      '점검이 끝나면 <b style="color:#fff;">새로고침 없이 자동으로</b> 다시 연결됩니다.</div>' +
+      '<div class="srv-meta"><span class="srv-dot"></span><span id="srv-elapsed">점검 중</span></div>';
+    document.body.appendChild(overlay);
+    return overlay;
+  }
+
+  function fmtElapsed(ms){
+    if (!ms || ms < 0) return '점검 중';
+    const s = Math.floor(ms / 1000);
+    const m = Math.floor(s / 60);
+    const h = Math.floor(m / 60);
+    if (h > 0) return '점검 중 · ' + h + '시간 ' + (m % 60) + '분 경과';
+    if (m > 0) return '점검 중 · ' + m + '분 ' + (s % 60) + '초 경과';
+    return '점검 중 · ' + s + '초 경과';
+  }
+
+  /* ── 입력 전면 차단 (F5 새로고침과 F12 는 남겨둔다) ── */
+  const ALLOW_KEYS = ['F5', 'F12'];
+  function blockEvent(e){
+    if (!locked) return;
+    if (e.type.indexOf('key') === 0) {
+      if (ALLOW_KEYS.indexOf(e.key) !== -1) return;
+      if (e.key === 'r' && (e.ctrlKey || e.metaKey)) return;   // Ctrl+R 새로고침 허용
+    }
+    e.stopImmediatePropagation();
+    e.preventDefault();
+  }
+  ['keydown','keypress','keyup','click','mousedown','mouseup','dblclick','contextmenu','touchstart','wheel']
+    .forEach(t => document.addEventListener(t, blockEvent, true));
+
+  /* ── 게임 일시정지 / 재개 ── */
+  function pauseGame(){
+    try {
+      if (typeof input !== 'undefined' && input) {
+        inputWasOn = !input.disabled;
+        input.blur();
+        input.disabled = true;
+      }
+      if (typeof timerInterval !== 'undefined' && timerInterval) {
+        clearInterval(timerInterval); timerInterval = null; pausedTimer = true;
+      }
+      if (typeof swInterval !== 'undefined' && swInterval) {
+        clearInterval(swInterval); swInterval = null;
+        pausedSw = true; swPauseAt = performance.now();
+      }
+    } catch(e){}
+  }
+
+  function resumeGame(){
+    try {
+      if (typeof input !== 'undefined' && input && inputWasOn) input.disabled = false;
+      inputWasOn = false;
+
+      const playing = (typeof gameStarted !== 'undefined' && gameStarted) &&
+                      !(typeof gameOver !== 'undefined' && gameOver);
+
+      if (pausedTimer && playing) {
+        // 남은 시간(timeLeft)은 그대로이므로 카운트다운만 다시 건다
+        startTimer();
+      }
+      if (pausedSw && playing) {
+        // 정지해 있던 만큼 시작 시각을 밀어 스톱워치 기록이 부풀지 않게 한다
+        swStart += (performance.now() - swPauseAt);
+        swInterval = setInterval(()=>{
+          swElapsed = (performance.now() - swStart) / 1000;
+          const el = document.getElementById('stopwatch-time');
+          if (el) el.textContent = swElapsed.toFixed(2);
+          updateStats();
+        }, 50);
+      }
+      pausedTimer = false; pausedSw = false; swPauseAt = 0;
+      if (playing && typeof input !== 'undefined' && input) input.focus();
+    } catch(e){}
+  }
+
+  /* ── 잠금 상태 적용 ── */
+  function applyLock(next, since){
+    if (next === locked) return;
+    locked  = next;
+    sinceTs = since || Date.now();
+
+    if (locked) {
+      ensureOverlay().classList.add('on');
+      pauseGame();
+      if (tickTimer) clearInterval(tickTimer);
+      const paint = ()=>{
+        const el = document.getElementById('srv-elapsed');
+        if (el) el.textContent = fmtElapsed(Date.now() - sinceTs);
+      };
+      paint();
+      tickTimer = setInterval(paint, 1000);
+    } else {
+      if (tickTimer) { clearInterval(tickTimer); tickTimer = null; }
+      if (overlay) overlay.classList.remove('on');
+      resumeGame();
+      if (window.flash) { try { flash('🟢 서버가 다시 열렸습니다'); } catch(e){} }
+    }
+  }
+
+  /* ── Firebase 구독 (기존 초기화가 끝날 때까지 대기) ── */
+  let tries = 0;
+  const poll = setInterval(()=>{
+    tries++;
+    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+      clearInterval(poll);
+      try {
+        firebase.database().ref('server_status').on('value', snap => {
+          const s = snap.val() || {};
+          applyLock(s.locked === true, s.since);
+        }, err => console.warn('server_status 구독 실패', err));
+        console.log('🛑 서버 정지 감시 활성');
+      } catch(e){ console.warn('서버 정지 감시 실패', e); }
+    } else if (tries > 60) {
+      clearInterval(poll);
+    }
+  }, 300);
+
+  window.__serverLock = { isLocked: ()=> locked };
+})();
+
 </script>
 </body>
 </html>
