@@ -1920,6 +1920,18 @@ const SHOP_ITEMS = {
 
 let currentShopCat = 'item';
 
+/* [버그수정] SHOP_ITEMS는 const, currentShopCat은 let으로 선언돼 있어서
+   window에 붙지 않는다. 그런데 Firebase 실시간 리스너는 window.SHOP_ITEMS /
+   window.currentShopCat 을 참조하기 때문에 항상 undefined였고,
+   "보유한 색상이 하나도 없다"고 잘못 판단해 장착한 색을 즉시 해제해 버렸다.
+   아래 두 줄로 window에 노출만 해주면 기존 로직이 의도대로 동작한다. */
+window.SHOP_ITEMS = SHOP_ITEMS;
+Object.defineProperty(window, 'currentShopCat', {
+  get(){ return currentShopCat; },
+  set(v){ currentShopCat = v; },
+  configurable: true
+});
+
 function renderShop(cat){
   currentShopCat = cat;
   const grid = document.getElementById('shop-grid');
@@ -1964,6 +1976,14 @@ function renderShop(cat){
       div.addEventListener('click', ()=>{ equipColor(item.hex); renderShop(cat); });
     } else if (!isOwned) {
       div.addEventListener('click', ()=> buyItem(item));
+    }
+    // 상시 효과 아이템(Star Trail / Neon Glow): 보유하면 자동 적용되므로 상태만 표시
+    if (isOwned && (item.id === 'ride_trail' || item.id === 'ride_neon')) {
+      div.classList.add('equipped');
+      div.style.opacity = '1';
+      div.style.cursor = 'default';
+      const pe = div.querySelector('.shop-item-price');
+      if (pe) pe.textContent = '✨ 적용 중';
     }
     // 일회용 아이템: 보유 중이면 "사용하기" 버튼
     if (item.consumable && isOwned) {
@@ -2538,6 +2558,100 @@ document.querySelectorAll('.key').forEach(key=>{
     ctx.globalAlpha=1;
   }
 
+  /* ══════════════════════════════════════════════════
+     상점 아이템 효과 구현
+       ride_trail (Star Trail) : 차량 뒤로 별 파티클
+       ride_neon  (Neon Glow)  : 차량 네온 발광 강화
+     ══════════════════════════════════════════════════ */
+  function ownsItem(id){
+    return !!(typeof currentUser !== 'undefined' && currentUser &&
+              (currentUser.owned || []).indexOf(id) !== -1);
+  }
+  function rgba(hex, a){
+    const c = hexToRgb(hex);
+    return 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + a + ')';
+  }
+
+  // ── Star Trail ──
+  let stars = [], starAccum = 0;
+
+  function spawnStar(x, y, col){
+    stars.push({
+      x: x + (Math.random()-0.5)*8,
+      y: y + (Math.random()-0.5)*10,
+      vx: 22 + Math.random()*52,      // 차 뒤(오른쪽)로 흘러가게
+      vy: (Math.random()-0.5)*20,
+      life: 0.7 + Math.random()*0.7,
+      age: 0,
+      size: 4.0 + Math.random()*2.8,
+      spin: Math.random()*Math.PI*2,
+      col: Math.random() < 0.32 ? '#ffffff' : col
+    });
+  }
+
+  function starPath(x, y, r, rot){
+    ctx.beginPath();
+    for (let i = 0; i < 10; i++){
+      const rad = (i % 2 === 0) ? r : r * 0.42;
+      const a = rot + i * Math.PI / 5;
+      const px = x + Math.cos(a)*rad, py = y + Math.sin(a)*rad;
+      i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+    }
+    ctx.closePath();
+  }
+
+  function updateStars(dt){
+    for (let i = stars.length - 1; i >= 0; i--){
+      const s = stars[i];
+      s.age += dt;
+      if (s.age >= s.life){ stars.splice(i, 1); continue; }
+      s.x += s.vx * dt;
+      s.y += s.vy * dt;
+      s.vy += 14 * dt;              // 살짝 아래로 흩어지게
+      s.spin += dt * 3.6;
+      const k = 1 - s.age / s.life;
+      const fade = Math.pow(k, 0.55);   // 끝까지 또렷하게 남도록 완만하게 감쇠
+      ctx.globalAlpha = fade;
+      ctx.fillStyle = s.col;
+      ctx.shadowColor = s.col;
+      ctx.shadowBlur = 14 * fade;
+      starPath(s.x, s.y, s.size * (0.45 + 0.55 * fade), s.spin);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+  }
+
+  // ── Neon Glow ──
+  function drawNeonGlow(cx, cy, col, tt){
+    const pulse = 0.72 + 0.28 * Math.sin(tt * 5.5);
+
+    // 바닥 언더글로우
+    const g = ctx.createRadialGradient(cx + 16, cy + 7, 1, cx + 16, cy + 7, 52);
+    g.addColorStop(0, rgba(col, 0.55 * pulse));
+    g.addColorStop(0.55, rgba(col, 0.20 * pulse));
+    g.addColorStop(1, rgba(col, 0));
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.ellipse(cx + 16, cy + 7, 52, 14, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 차체 주변 하이라이트 링
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.42 * pulse;
+    ctx.strokeStyle = col;
+    ctx.shadowColor = col;
+    ctx.shadowBlur = 30;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(cx + 16, cy - 4, 40, 15, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+  }
+
   function tick(ts){
     const dt=Math.min((ts-lastTs)/1000,0.05); lastTs=ts;
     if(!ctx){raf=requestAnimationFrame(tick);return;}
@@ -2553,6 +2667,19 @@ document.querySelectorAll('.key').forEach(key=>{
       if(dustAccum>0.05){ dustAccum=0; const d=document.createElement('div'); d.className='dust'; d.style.left=(carX+26+Math.random()*6)+'px'; d.style.bottom=(H-carY-2+Math.random()*4)+'px'; zone.appendChild(d); setTimeout(()=>d.remove(),400); }
     }
     const vehicleCol=getVehicleStyle().col;
+
+    // Star Trail: 달리는 동안 차 뒤로 별을 뿌린다
+    if (ownsItem('ride_trail')){
+      if (gameStarted && !gameOver){
+        starAccum += dt;
+        while (starAccum > 0.024){ starAccum -= 0.024; spawnStar(carX + 46, carY - 3, vehicleCol); }
+      }
+      updateStars(dt);
+    } else if (stars.length){ stars.length = 0; }
+
+    // Neon Glow: 차체 발광을 한 겹 더 얹는다 (차량보다 먼저 그려 뒤에 깔리게)
+    if (ownsItem('ride_neon')) drawNeonGlow(carX, carY, vehicleCol, t);
+
     drawSpeedLines(carX,carY,t,vehicleCol);
     drawVehicle(carX,carY,t);
     if (edgeAlertEl){
@@ -3647,6 +3774,53 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
     if (typeof angle === 'number') racingCtx.rotate(angle);
 
     const s = 1.15; // 크기 배율
+
+    // ── 상점 아이템 효과 (내 차에만) ──
+    if (!isOpp && typeof currentUser !== 'undefined' && currentUser) {
+      const own = currentUser.owned || [];
+      const tt  = performance.now() / 1000;
+
+      // Neon Glow: 차체 주변 발광
+      if (own.indexOf('ride_neon') !== -1) {
+        const pulse = 0.7 + 0.3 * Math.sin(tt * 5.5);
+        const g = racingCtx.createRadialGradient(0, 0, 2, 0, 0, 44);
+        g.addColorStop(0,   color + 'aa');
+        g.addColorStop(0.5, color + '44');
+        g.addColorStop(1,   color + '00');
+        racingCtx.save();
+        racingCtx.globalAlpha = 0.6 * pulse;
+        racingCtx.fillStyle = g;
+        racingCtx.beginPath(); racingCtx.arc(0, 0, 44, 0, Math.PI*2); racingCtx.fill();
+        racingCtx.restore();
+      }
+
+      // Star Trail: 차 뒤로 흩어지는 별
+      if (own.indexOf('ride_trail') !== -1) {
+        racingCtx.save();
+        for (let i = 0; i < 8; i++) {
+          const ph = (tt * 2.2 + i * 0.33) % 1;
+          const dy = 20 + ph * 50;
+          const dx = Math.sin(i * 2.3 + tt * 3) * (5 + ph * 13);
+          const k  = 1 - ph;
+          const r  = 3.6 * k + 0.7;
+          racingCtx.globalAlpha = k * 0.92;
+          racingCtx.fillStyle   = (i % 3 === 0) ? '#ffffff' : color;
+          racingCtx.shadowColor = color;
+          racingCtx.shadowBlur  = 11 * k;
+          racingCtx.beginPath();
+          for (let j = 0; j < 10; j++) {
+            const rad = (j % 2 === 0) ? r : r * 0.42;
+            const a   = tt * 2 + i + j * Math.PI / 5;
+            const px  = dx + Math.cos(a) * rad, py = dy + Math.sin(a) * rad;
+            j ? racingCtx.lineTo(px, py) : racingCtx.moveTo(px, py);
+          }
+          racingCtx.closePath();
+          racingCtx.fill();
+        }
+        racingCtx.restore();
+      }
+    }
+
     racingCtx.shadowColor = color;
     racingCtx.shadowBlur  = 12;
     racingCtx.strokeStyle = color;
@@ -4066,7 +4240,27 @@ function updateIntroCarDisplay() {
     `mask-image:${maskH}, ${maskV}`,
     'mask-composite:intersect'
   ].join(';') + ';';
+
+  // Neon Glow 보유 시 인트로 차량에도 발광을 얹는다
+  const hasNeon = !!(currentUser && (currentUser.owned || []).indexOf('ride_neon') !== -1);
+  if (hasNeon) {
+    const ac = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#00ff88';
+    imgFront.style.filter = 'drop-shadow(0 0 14px ' + ac + ') drop-shadow(0 0 34px ' + ac + ') brightness(1.12)';
+    imgFront.style.animation = 'introNeonPulse 2.4s ease-in-out infinite';
+  } else {
+    imgFront.style.filter = '';
+    imgFront.style.animation = '';
+  }
 }
+
+/* Neon Glow 인트로 펄스 (1회만 주입) */
+(function(){
+  if (document.getElementById('neon-pulse-style')) return;
+  const st = document.createElement('style');
+  st.id = 'neon-pulse-style';
+  st.textContent = '@keyframes introNeonPulse{0%,100%{opacity:1;}50%{opacity:0.82;}}';
+  document.head.appendChild(st);
+})();
 
 window.updateIntroCarDisplay = updateIntroCarDisplay;
 window.equippedCar = null;
