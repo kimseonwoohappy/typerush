@@ -692,6 +692,87 @@
   .stat-value { font-size: 17px; }
   .stat-label { font-size: 9px; }
 }
+
+  /* ══════════════════════════════════════════════════
+     RACING 업그레이드 — 중계 화면 / HUD
+     ══════════════════════════════════════════════════ */
+  #racing-bcast { position:absolute; left:0; top:0; z-index:0; display:block; }
+
+  /* 미니맵 (기존 트랙 캔버스) */
+  .rc-minimap {
+    position:absolute; top:16px; left:16px; z-index:3;
+    width:264px; height:190px;
+    background:rgba(8,8,13,0.72); border:1px solid rgba(255,255,255,0.09);
+    border-radius:12px; padding:8px; backdrop-filter:blur(6px);
+    box-shadow:0 10px 34px rgba(0,0,0,0.5);
+  }
+  .rc-minimap canvas { width:100%; height:100%; display:block; }
+  .rc-minimap-label {
+    position:absolute; top:10px; right:12px;
+    font-family:'Rajdhani',sans-serif; font-size:10px; letter-spacing:2.5px;
+    color:rgba(255,255,255,0.35);
+  }
+
+  /* 상단 중계 바 */
+  .rc-hud-top {
+    position:absolute; top:16px; left:50%; transform:translateX(-50%); z-index:3;
+    display:flex; align-items:stretch; gap:1px;
+    background:rgba(8,8,13,0.82); border:1px solid rgba(255,255,255,0.1);
+    border-radius:11px; overflow:hidden; backdrop-filter:blur(6px);
+    box-shadow:0 10px 34px rgba(0,0,0,0.5);
+  }
+  .rc-pill { padding:9px 16px; text-align:center; background:rgba(255,255,255,0.02); min-width:74px; }
+  .rc-pill .k { font-family:'Rajdhani',sans-serif; font-size:9.5px; letter-spacing:2px; color:rgba(255,255,255,0.34); }
+  .rc-pill .v { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:1.5px; color:#fff; line-height:1.05; }
+  .rc-pill.lead .v { color:#23ff7a; }
+  .rc-pill.trail .v { color:#ff4466; }
+
+  /* 순위 배지 */
+  .rc-pos { position:relative; }
+  .rc-pos .v { font-size:28px; }
+
+  /* 속도계 */
+  .rc-speedo {
+    position:absolute; right:18px; bottom:238px; z-index:3;
+    width:168px; height:168px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .rc-speedo canvas { position:absolute; inset:0; width:100%; height:100%; }
+  .rc-speedo-read { position:relative; text-align:center; pointer-events:none; }
+  .rc-speedo-val {
+    font-family:'Bebas Neue',sans-serif; font-size:46px; line-height:0.92;
+    color:#fff; text-shadow:0 0 18px rgba(255,255,255,0.28);
+  }
+  .rc-speedo-unit { font-family:'Rajdhani',sans-serif; font-size:11px; letter-spacing:3px; color:rgba(255,255,255,0.4); }
+  .rc-gear {
+    margin-top:2px; font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:2px;
+    color:var(--accent);
+  }
+  .rc-speedo-read { transform:translateY(-6px); }
+
+  /* 추월 알림 */
+  .rc-flash {
+    position:absolute; top:44%; left:50%; transform:translate(-50%,-50%) scale(0.86); z-index:6;
+    font-family:'Bebas Neue',sans-serif; font-size:60px; letter-spacing:7px;
+    opacity:0; pointer-events:none; white-space:nowrap;
+    transition:opacity .25s ease, transform .35s cubic-bezier(.2,.9,.3,1.4);
+  }
+  .rc-flash.on { opacity:1; transform:translate(-50%,-50%) scale(1); }
+  .rc-flash.pass  { color:#23ff7a; text-shadow:0 0 34px rgba(35,255,122,0.6); }
+  .rc-flash.lost  { color:#ff4466; text-shadow:0 0 34px rgba(255,68,102,0.6); }
+
+  /* 하단 타이핑 패널 살짝 정돈 */
+  #racing-game-screen .text-display { background:rgba(10,10,16,0.72); backdrop-filter:blur(4px); }
+
+  @media (max-width: 900px) {
+    .rc-minimap { width:180px; height:132px; top:10px; left:10px; }
+    .rc-speedo { width:124px; height:124px; right:10px; bottom:250px; }
+    .rc-speedo-val { font-size:34px; }
+    .rc-pill { padding:7px 11px; min-width:58px; }
+    .rc-pill .v { font-size:19px; }
+    .rc-flash { font-size:38px; }
+  }
+
 </style>
 <!-- Firebase SDK (인라인 임베드 - CDN 차단 우회) -->
 <script>!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).firebase=t()}(this,function(){"use strict";const r=function(t){const r=[];let n=0;for(let i=0;i<t.length;i++){let e=t.charCodeAt(i);e<128?r[n++]=e:(e<2048?r[n++]=e>>6|192:(55296==(64512&e)&&i+1<t.length&&56320==(64512&t.charCodeAt(i+1))?(e=65536+((1023&e)<<10)+(1023&t.charCodeAt(++i)),r[n++]=e>>18|240,r[n++]=e>>12&63|128):r[n++]=e>>12|224,r[n++]=e>>6&63|128),r[n++]=63&e|128)}return r},n={byteToCharMap_:null,charToByteMap_:null,byteToCharMapWebSafe_:null,charToByteMapWebSafe_:null,ENCODED_VALS_BASE:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",get ENCODED_VALS(){return this.ENCODED_VALS_BASE+"+/="},get ENCODED_VALS_WEBSAFE(){return this.ENCODED_VALS_BASE+"-_."},HAS_NATIVE_SUPPORT:"function"==typeof atob,encodeByteArray(r,e){if(!Array.isArray(r))throw Error("encodeByteArray takes an array as a parameter");this.init_();var n=e?this.byteToCharMapWebSafe_:this.byteToCharMap_;const i=[];for(let h=0;h<r.length;h+=3){var a=r[h],s=h+1<r.length,o=s?r[h+1]:0,c=h+2<r.length,l=c?r[h+2]:0;let e=(15&o)<<2|l>>6,t=63&l;c||(t=64,s||(e=64)),i.push(n[a>>2],n[(3&a)<<4|o>>4],n[e],n[t])}return i.join("")},encodeString(e,t){return this.HAS_NATIVE_SUPPORT&&!t?btoa(e):this.encodeByteArray(r(e),t)},decodeString(e,t){return this.HAS_NATIVE_SUPPORT&&!t?atob(e):function(e){const t=[];let r=0,n=0;for(;r<e.length;){var i,a,s=e[r++];s<128?t[n++]=String.fromCharCode(s):191<s&&s<224?(i=e[r++],t[n++]=String.fromCharCode((31&s)<<6|63&i)):239<s&&s<365?(a=((7&s)<<18|(63&e[r++])<<12|(63&e[r++])<<6|63&e[r++])-65536,t[n++]=String.fromCharCode(55296+(a>>10)),t[n++]=String.fromCharCode(56320+(1023&a))):(i=e[r++],a=e[r++],t[n++]=String.fromCharCode((15&s)<<12|(63&i)<<6|63&a))}return t.join("")}(this.decodeStringToByteArray(e,t))},decodeStringToByteArray(e,t){this.init_();var r=t?this.charToByteMapWebSafe_:this.charToByteMap_;const n=[];for(let c=0;c<e.length;){var i=r[e.charAt(c++)],a=c<e.length?r[e.charAt(c)]:0;++c;var s=c<e.length?r[e.charAt(c)]:64;++c;var o=c<e.length?r[e.charAt(c)]:64;if(++c,null==i||null==a||null==s||null==o)throw new l;n.push(i<<2|a>>4),64!==s&&(n.push(a<<4&240|s>>2),64!==o&&n.push(s<<6&192|o))}return n},init_(){if(!this.byteToCharMap_){this.byteToCharMap_={},this.charToByteMap_={},this.byteToCharMapWebSafe_={},this.charToByteMapWebSafe_={};for(let e=0;e<this.ENCODED_VALS.length;e++)this.byteToCharMap_[e]=this.ENCODED_VALS.charAt(e),this.charToByteMap_[this.byteToCharMap_[e]]=e,this.byteToCharMapWebSafe_[e]=this.ENCODED_VALS_WEBSAFE.charAt(e),this.charToByteMapWebSafe_[this.byteToCharMapWebSafe_[e]]=e,e>=this.ENCODED_VALS_BASE.length&&(this.charToByteMap_[this.ENCODED_VALS_WEBSAFE.charAt(e)]=e,this.charToByteMapWebSafe_[this.ENCODED_VALS.charAt(e)]=e)}}};class l extends Error{constructor(){super(...arguments),this.name="DecodeBase64StringError"}}const i=function(e){return e=e,t=r(e),n.encodeByteArray(t,!0).replace(/\./g,"");var t};function c(e,t){if(!(t instanceof Object))return t;switch(t.constructor){case Date:const r=t;return new Date(r.getTime());case Object:void 0===e&&(e={});break;case Array:e=[];break;default:return t}for(const n in t)t.hasOwnProperty(n)&&"__proto__"!==n&&(e[n]=c(e[n],t[n]));return e}const e=()=>function(){if("undefined"!=typeof self)return self;if("undefined"!=typeof window)return window;if("undefined"!=typeof global)return global;throw new Error("Unable to locate global object.")}().__FIREBASE_DEFAULTS__,t=()=>{if("undefined"!=typeof document){let e;try{e=document.cookie.match(/__FIREBASE_DEFAULTS__=([^;]+)/)}catch(e){return}var t=e&&function(e){try{return n.decodeString(e,!0)}catch(e){console.error("base64Decode failed: ",e)}return null}(e[1]);return t&&JSON.parse(t)}},a=()=>{try{return e()||(()=>{if("undefined"!=typeof process&&void 0!==process.env){var e=process.env.__FIREBASE_DEFAULTS__;return e?JSON.parse(e):void 0}})()||t()}catch(e){return void console.info(`Unable to get __FIREBASE_DEFAULTS__ due to: ${e}`)}},h=()=>{var e;return null===(e=a())||void 0===e?void 0:e.config};class s{constructor(){this.reject=()=>{},this.resolve=()=>{},this.promise=new Promise((e,t)=>{this.resolve=e,this.reject=t})}wrapCallback(r){return(e,t)=>{e?this.reject(e):this.resolve(t),"function"==typeof r&&(this.promise.catch(()=>{}),1===r.length?r(e):r(e,t))}}}function d(){return"object"==typeof self&&self.self===self}class o extends Error{constructor(e,t,r){super(t),this.code=e,this.customData=r,this.name="FirebaseError",Object.setPrototypeOf(this,o.prototype),Error.captureStackTrace&&Error.captureStackTrace(this,u.prototype.create)}}class u{constructor(e,t,r){this.service=e,this.serviceName=t,this.errors=r}create(e,...t){var n,r=t[0]||{},i=`${this.service}/${e}`,a=this.errors[e],a=a?(n=r,a.replace(p,(e,t)=>{var r=n[t];return null!=r?String(r):`<${t}?>`})):"Error",a=`${this.serviceName}: ${a} (${i}).`;return new o(i,a,r)}}const p=/\{\$([^}]+)}/g;function f(e,t){return Object.prototype.hasOwnProperty.call(e,t)}function g(e,t){if(e===t)return 1;const r=Object.keys(e),n=Object.keys(t);for(const s of r){if(!n.includes(s))return;var i=e[s],a=t[s];if(b(i)&&b(a)){if(!g(i,a))return}else if(i!==a)return}for(const o of n)if(!r.includes(o))return;return 1}function b(e){return null!==e&&"object"==typeof e}function m(e,t){const r=new v(e,t);return r.subscribe.bind(r)}class v{constructor(e,t){this.observers=[],this.unsubscribes=[],this.observerCount=0,this.task=Promise.resolve(),this.finalized=!1,this.onNoObservers=t,this.task.then(()=>{e(this)}).catch(e=>{this.error(e)})}next(t){this.forEachObserver(e=>{e.next(t)})}error(t){this.forEachObserver(e=>{e.error(t)}),this.close(t)}complete(){this.forEachObserver(e=>{e.complete()}),this.close()}subscribe(e,t,r){let n;if(void 0===e&&void 0===t&&void 0===r)throw new Error("Missing Observer.");n=function(e,t){if("object"!=typeof e||null===e)return!1;for(const r of t)if(r in e&&"function"==typeof e[r])return!0;return!1}(e,["next","error","complete"])?e:{next:e,error:t,complete:r},void 0===n.next&&(n.next=_),void 0===n.error&&(n.error=_),void 0===n.complete&&(n.complete=_);var i=this.unsubscribeOne.bind(this,this.observers.length);return this.finalized&&this.task.then(()=>{try{this.finalError?n.error(this.finalError):n.complete()}catch(e){}}),this.observers.push(n),i}unsubscribeOne(e){void 0!==this.observers&&void 0!==this.observers[e]&&(delete this.observers[e],--this.observerCount,0===this.observerCount&&void 0!==this.onNoObservers&&this.onNoObservers(this))}forEachObserver(t){if(!this.finalized)for(let e=0;e<this.observers.length;e++)this.sendOne(e,t)}sendOne(e,t){this.task.then(()=>{if(void 0!==this.observers&&void 0!==this.observers[e])try{t(this.observers[e])}catch(e){"undefined"!=typeof console&&console.error&&console.error(e)}})}close(e){this.finalized||(this.finalized=!0,void 0!==e&&(this.finalError=e),this.task.then(()=>{this.observers=void 0,this.onNoObservers=void 0}))}}function _(){}class E{constructor(e,t,r){this.name=e,this.instanceFactory=t,this.type=r,this.multipleInstances=!1,this.serviceProps={},this.instantiationMode="LAZY",this.onInstanceCreated=null}setInstantiationMode(e){return this.instantiationMode=e,this}setMultipleInstances(e){return this.multipleInstances=e,this}setServiceProps(e){return this.serviceProps=e,this}setInstanceCreatedCallback(e){return this.onInstanceCreated=e,this}}const y="[DEFAULT]";class w{constructor(e,t){this.name=e,this.container=t,this.component=null,this.instances=new Map,this.instancesDeferred=new Map,this.instancesOptions=new Map,this.onInitCallbacks=new Map}get(e){var t=this.normalizeInstanceIdentifier(e);if(!this.instancesDeferred.has(t)){const n=new s;if(this.instancesDeferred.set(t,n),this.isInitialized(t)||this.shouldAutoInitialize())try{var r=this.getOrInitializeService({instanceIdentifier:t});r&&n.resolve(r)}catch(e){}}return this.instancesDeferred.get(t).promise}getImmediate(e){var t=this.normalizeInstanceIdentifier(null==e?void 0:e.identifier),r=null!==(r=null==e?void 0:e.optional)&&void 0!==r&&r;if(!this.isInitialized(t)&&!this.shouldAutoInitialize()){if(r)return null;throw Error(`Service ${this.name} is not available`)}try{return this.getOrInitializeService({instanceIdentifier:t})}catch(e){if(r)return null;throw e}}getComponent(){return this.component}setComponent(e){if(e.name!==this.name)throw Error(`Mismatching Component ${e.name} for Provider ${this.name}.`);if(this.component)throw Error(`Component for ${this.name} has already been provided`);if(this.component=e,this.shouldAutoInitialize()){if("EAGER"===e.instantiationMode)try{this.getOrInitializeService({instanceIdentifier:y})}catch(e){}for(var[t,r]of this.instancesDeferred.entries()){t=this.normalizeInstanceIdentifier(t);try{var n=this.getOrInitializeService({instanceIdentifier:t});r.resolve(n)}catch(e){}}}}clearInstance(e=y){this.instancesDeferred.delete(e),this.instancesOptions.delete(e),this.instances.delete(e)}async delete(){const e=Array.from(this.instances.values());await Promise.all([...e.filter(e=>"INTERNAL"in e).map(e=>e.INTERNAL.delete()),...e.filter(e=>"_delete"in e).map(e=>e._delete())])}isComponentSet(){return null!=this.component}isInitialized(e=y){return this.instances.has(e)}getOptions(e=y){return this.instancesOptions.get(e)||{}}initialize(e={}){var{options:t={}}=e,r=this.normalizeInstanceIdentifier(e.instanceIdentifier);if(this.isInitialized(r))throw Error(`${this.name}(${r}) has already been initialized`);if(!this.isComponentSet())throw Error(`Component ${this.name} has not been registered yet`);var n,i,a=this.getOrInitializeService({instanceIdentifier:r,options:t});for([n,i]of this.instancesDeferred.entries())r===this.normalizeInstanceIdentifier(n)&&i.resolve(a);return a}onInit(e,t){var r=this.normalizeInstanceIdentifier(t);const n=null!==(i=this.onInitCallbacks.get(r))&&void 0!==i?i:new Set;n.add(e),this.onInitCallbacks.set(r,n);var i=this.instances.get(r);return i&&e(i,r),()=>{n.delete(e)}}invokeOnInitCallbacks(e,t){var r=this.onInitCallbacks.get(t);if(r)for(const n of r)try{n(e,t)}catch(e){}}getOrInitializeService({instanceIdentifier:e,options:t={}}){let r=this.instances.get(e);if(!r&&this.component&&(r=this.component.instanceFactory(this.container,{instanceIdentifier:(n=e)===y?void 0:n,options:t}),this.instances.set(e,r),this.instancesOptions.set(e,t),this.invokeOnInitCallbacks(r,e),this.component.onInstanceCreated))try{this.component.onInstanceCreated(this.container,e,r)}catch(e){}var n;return r||null}normalizeInstanceIdentifier(e=y){return!this.component||this.component.multipleInstances?e:y}shouldAutoInitialize(){return!!this.component&&"EXPLICIT"!==this.component.instantiationMode}}class C{constructor(e){this.name=e,this.providers=new Map}addComponent(e){const t=this.getProvider(e.name);if(t.isComponentSet())throw new Error(`Component ${e.name} has already been registered with ${this.name}`);t.setComponent(e)}addOrOverwriteComponent(e){const t=this.getProvider(e.name);t.isComponentSet()&&this.providers.delete(e.name),this.addComponent(e)}getProvider(e){if(this.providers.has(e))return this.providers.get(e);var t=new w(e,this);return this.providers.set(e,t),t}getProviders(){return Array.from(this.providers.values())}}const D=[];var I,S,O;(S=I=I||{})[S.DEBUG=0]="DEBUG",S[S.VERBOSE=1]="VERBOSE",S[S.INFO=2]="INFO",S[S.WARN=3]="WARN",S[S.ERROR=4]="ERROR",S[S.SILENT=5]="SILENT";const A={debug:I.DEBUG,verbose:I.VERBOSE,info:I.INFO,warn:I.WARN,error:I.ERROR,silent:I.SILENT},L=I.INFO,N={[I.DEBUG]:"log",[I.VERBOSE]:"log",[I.INFO]:"info",[I.WARN]:"warn",[I.ERROR]:"error"},B=(e,t,...r)=>{if(!(t<e.logLevel)){var n=(new Date).toISOString(),i=N[t];if(!i)throw new Error(`Attempted to log a message with an invalid logType (value: ${t})`);console[i](`[${n}]  ${e.name}:`,...r)}};class T{constructor(e){this.name=e,this._logLevel=L,this._logHandler=B,this._userLogHandler=null,D.push(this)}get logLevel(){return this._logLevel}set logLevel(e){if(!(e in I))throw new TypeError(`Invalid value "${e}" assigned to \`logLevel\``);this._logLevel=e}setLogLevel(e){this._logLevel="string"==typeof e?A[e]:e}get logHandler(){return this._logHandler}set logHandler(e){if("function"!=typeof e)throw new TypeError("Value assigned to `logHandler` must be a function");this._logHandler=e}get userLogHandler(){return this._userLogHandler}set userLogHandler(e){this._userLogHandler=e}debug(...e){this._userLogHandler&&this._userLogHandler(this,I.DEBUG,...e),this._logHandler(this,I.DEBUG,...e)}log(...e){this._userLogHandler&&this._userLogHandler(this,I.VERBOSE,...e),this._logHandler(this,I.VERBOSE,...e)}info(...e){this._userLogHandler&&this._userLogHandler(this,I.INFO,...e),this._logHandler(this,I.INFO,...e)}warn(...e){this._userLogHandler&&this._userLogHandler(this,I.WARN,...e),this._logHandler(this,I.WARN,...e)}error(...e){this._userLogHandler&&this._userLogHandler(this,I.ERROR,...e),this._logHandler(this,I.ERROR,...e)}}const R=(t,e)=>e.some(e=>t instanceof e);let P,M;const k=new WeakMap,F=new WeakMap,j=new WeakMap,$=new WeakMap,z=new WeakMap;let H={get(e,t,r){if(e instanceof IDBTransaction){if("done"===t)return F.get(e);if("objectStoreNames"===t)return e.objectStoreNames||j.get(e);if("store"===t)return r.objectStoreNames[1]?void 0:r.objectStore(r.objectStoreNames[0])}return U(e[t])},set(e,t,r){return e[t]=r,!0},has(e,t){return e instanceof IDBTransaction&&("done"===t||"store"===t)||t in e}};function x(n){return n!==IDBDatabase.prototype.transaction||"objectStoreNames"in IDBTransaction.prototype?(M=M||[IDBCursor.prototype.advance,IDBCursor.prototype.continue,IDBCursor.prototype.continuePrimaryKey]).includes(n)?function(...e){return n.apply(W(this),e),U(k.get(this))}:function(...e){return U(n.apply(W(this),e))}:function(e,...t){var r=n.call(W(this),e,...t);return j.set(r,e.sort?e.sort():[e]),U(r)}}function V(e){return"function"==typeof e?x(e):(e instanceof IDBTransaction&&(a=e,F.has(a)||(t=new Promise((e,t)=>{const r=()=>{a.removeEventListener("complete",n),a.removeEventListener("error",i),a.removeEventListener("abort",i)},n=()=>{e(),r()},i=()=>{t(a.error||new DOMException("AbortError","AbortError")),r()};a.addEventListener("complete",n),a.addEventListener("error",i),a.addEventListener("abort",i)}),F.set(a,t))),R(e,P=P||[IDBDatabase,IDBObjectStore,IDBIndex,IDBCursor,IDBTransaction])?new Proxy(e,H):e);var a,t}function U(e){if(e instanceof IDBRequest)return function(a){const e=new Promise((e,t)=>{const r=()=>{a.removeEventListener("success",n),a.removeEventListener("error",i)},n=()=>{e(U(a.result)),r()},i=()=>{t(a.error),r()};a.addEventListener("success",n),a.addEventListener("error",i)});return e.then(e=>{e instanceof IDBCursor&&k.set(e,a)}).catch(()=>{}),z.set(e,a),e}(e);if($.has(e))return $.get(e);var t=V(e);return t!==e&&($.set(e,t),z.set(t,e)),t}const W=e=>z.get(e);const J=["get","getKey","getAll","getAllKeys","count"],G=["put","add","delete","clear"],K=new Map;function Y(e,t){if(e instanceof IDBDatabase&&!(t in e)&&"string"==typeof t){if(K.get(t))return K.get(t);const i=t.replace(/FromIndex$/,""),a=t!==i,s=G.includes(i);if(i in(a?IDBIndex:IDBObjectStore).prototype&&(s||J.includes(i))){var r=async function(e,...t){var r=this.transaction(e,s?"readwrite":"readonly");let n=r.store;return a&&(n=n.index(t.shift())),(await Promise.all([n[i](...t),s&&r.done]))[0]};return K.set(t,r),r}}}H={...O=H,get:(e,t,r)=>Y(e,t)||O.get(e,t,r),has:(e,t)=>!!Y(e,t)||O.has(e,t)};class X{constructor(e){this.container=e}getPlatformInfoString(){const e=this.container.getProviders();return e.map(e=>{if("VERSION"!==(null==(t=e.getComponent())?void 0:t.type))return null;var t,t=e.getImmediate();return`${t.library}/${t.version}`}).filter(e=>e).join(" ")}}const q="@firebase/app",Z="0.10.5",Q=new T("@firebase/app");var ee;const te="[DEFAULT]",re={"@firebase/app":"fire-core","@firebase/app-compat":"fire-core-compat","@firebase/analytics":"fire-analytics","@firebase/analytics-compat":"fire-analytics-compat","@firebase/app-check":"fire-app-check","@firebase/app-check-compat":"fire-app-check-compat","@firebase/auth":"fire-auth","@firebase/auth-compat":"fire-auth-compat","@firebase/database":"fire-rtdb","@firebase/database-compat":"fire-rtdb-compat","@firebase/functions":"fire-fn","@firebase/functions-compat":"fire-fn-compat","@firebase/installations":"fire-iid","@firebase/installations-compat":"fire-iid-compat","@firebase/messaging":"fire-fcm","@firebase/messaging-compat":"fire-fcm-compat","@firebase/performance":"fire-perf","@firebase/performance-compat":"fire-perf-compat","@firebase/remote-config":"fire-rc","@firebase/remote-config-compat":"fire-rc-compat","@firebase/storage":"fire-gcs","@firebase/storage-compat":"fire-gcs-compat","@firebase/firestore":"fire-fst","@firebase/firestore-compat":"fire-fst-compat","@firebase/vertexai-preview":"fire-vertex","fire-js":"fire-js",firebase:"fire-js-all"},ne=new Map,ie=new Map,ae=new Map;function se(t,r){try{t.container.addComponent(r)}catch(e){Q.debug(`Component ${r.name} failed to register with FirebaseApp ${t.name}`,e)}}function oe(e,t){e.container.addOrOverwriteComponent(t)}function ce(e){var t=e.name;if(ae.has(t))return Q.debug(`There were multiple attempts to register component ${t}.`),!1;ae.set(t,e);for(const r of ne.values())se(r,e);for(const n of ie.values())se(n,e);return!0}function le(e,t){const r=e.container.getProvider("heartbeat").getImmediate({optional:!0});return r&&r.triggerHeartbeat(),e.container.getProvider(t)}function he(e){return void 0!==e.options}const de=new u("app","Firebase",{"no-app":"No Firebase App '{$appName}' has been created - call initializeApp() first","bad-app-name":"Illegal App name: '{$appName}'","duplicate-app":"Firebase App named '{$appName}' already exists with different options or config","app-deleted":"Firebase App named '{$appName}' already deleted","server-app-deleted":"Firebase Server App has been deleted","no-options":"Need to provide options, when not being deployed to hosting via source.","invalid-app-argument":"firebase.{$appName}() takes either no argument or a Firebase App instance.","invalid-log-argument":"First argument to `onLog` must be null or a function.","idb-open":"Error thrown when opening IndexedDB. Original error: {$originalErrorMessage}.","idb-get":"Error thrown when reading from IndexedDB. Original error: {$originalErrorMessage}.","idb-set":"Error thrown when writing to IndexedDB. Original error: {$originalErrorMessage}.","idb-delete":"Error thrown when deleting from IndexedDB. Original error: {$originalErrorMessage}.","finalization-registry-not-supported":"FirebaseServerApp deleteOnDeref field defined but the JS runtime does not support FinalizationRegistry.","invalid-server-app-environment":"FirebaseServerApp is not for use in browser environments."});class ue{constructor(e,t,r){this._isDeleted=!1,this._options=Object.assign({},e),this._config=Object.assign({},t),this._name=t.name,this._automaticDataCollectionEnabled=t.automaticDataCollectionEnabled,this._container=r,this.container.addComponent(new E("app",()=>this,"PUBLIC"))}get automaticDataCollectionEnabled(){return this.checkDestroyed(),this._automaticDataCollectionEnabled}set automaticDataCollectionEnabled(e){this.checkDestroyed(),this._automaticDataCollectionEnabled=e}get name(){return this.checkDestroyed(),this._name}get options(){return this.checkDestroyed(),this._options}get config(){return this.checkDestroyed(),this._config}get container(){return this._container}get isDeleted(){return this._isDeleted}set isDeleted(e){this._isDeleted=e}checkDestroyed(){if(this.isDeleted)throw de.create("app-deleted",{appName:this._name})}}class pe extends ue{constructor(e,t,r,n){var i=void 0!==t.automaticDataCollectionEnabled&&t.automaticDataCollectionEnabled,a={name:r,automaticDataCollectionEnabled:i};void 0!==e.apiKey?super(e,a,n):super(e.options,a,n),this._serverConfig=Object.assign({automaticDataCollectionEnabled:i},t),this._finalizationRegistry=new FinalizationRegistry(()=>{this.automaticCleanup()}),this._refCount=0,this.incRefCount(this._serverConfig.releaseOnDeref),this._serverConfig.releaseOnDeref=void 0,t.releaseOnDeref=void 0,me(q,Z,"serverapp")}toJSON(){}get refCount(){return this._refCount}incRefCount(e){this.isDeleted||(this._refCount++,void 0!==e&&this._finalizationRegistry.register(e,this))}decRefCount(){return this.isDeleted?0:--this._refCount}automaticCleanup(){be(this)}get settings(){return this.checkDestroyed(),this._serverConfig}checkDestroyed(){if(this.isDeleted)throw de.create("server-app-deleted")}}const fe="10.12.2";function ge(e,t={}){let r=e;if("object"!=typeof t){const i=t;t={name:i}}var n=Object.assign({name:te,automaticDataCollectionEnabled:!1},t);const i=n.name;if("string"!=typeof i||!i)throw de.create("bad-app-name",{appName:String(i)});if(r=r||h(),!r)throw de.create("no-options");var a=ne.get(i);if(a){if(g(r,a.options)&&g(n,a.config))return a;throw de.create("duplicate-app",{appName:i})}const s=new C(i);for(const o of ae.values())s.addComponent(o);n=new ue(r,n,s);return ne.set(i,n),n}async function be(e){let t=!1;var r=e.name;if(ne.has(r))t=!0,ne.delete(r);else if(ie.has(r)){const n=e;n.decRefCount()<=0&&(ie.delete(r),t=!0)}t&&(await Promise.all(e.container.getProviders().map(e=>e.delete())),e.isDeleted=!0)}function me(e,t,r){let n=null!==(a=re[e])&&void 0!==a?a:e;r&&(n+=`-${r}`);var i=n.match(/\s|\//),a=t.match(/\s|\//);if(i||a){const s=[`Unable to register library "${n}" with version "${t}":`];return i&&s.push(`library name "${n}" contains illegal characters (whitespace or "/")`),i&&a&&s.push("and"),a&&s.push(`version name "${t}" contains illegal characters (whitespace or "/")`),void Q.warn(s.join(" "))}ce(new E(`${n}-version`,()=>({library:n,version:t}),"VERSION"))}function ve(e,t){if(null!==e&&"function"!=typeof e)throw de.create("invalid-log-argument");!function(a,e){for(const t of D){let i=null;e&&e.level&&(i=A[e.level]),t.userLogHandler=null===a?null:(e,t,...r)=>{var n=r.map(e=>{if(null==e)return null;if("string"==typeof e)return e;if("number"==typeof e||"boolean"==typeof e)return e.toString();if(e instanceof Error)return e.message;try{return JSON.stringify(e)}catch(e){return null}}).filter(e=>e).join(" ");t>=(null!==i&&void 0!==i?i:e.logLevel)&&a({level:I[t].toLowerCase(),message:n,args:r,type:e.name})}}}(e,t)}function _e(e){var t;t=e,D.forEach(e=>{e.setLogLevel(t)})}const Ee="firebase-heartbeat-database",ye=1,we="firebase-heartbeat-store";let Ce=null;function De(){return Ce=Ce||function(e,t,{blocked:r,upgrade:n,blocking:i,terminated:a}){const s=indexedDB.open(e,t),o=U(s);return n&&s.addEventListener("upgradeneeded",e=>{n(U(s.result),e.oldVersion,e.newVersion,U(s.transaction),e)}),r&&s.addEventListener("blocked",e=>r(e.oldVersion,e.newVersion,e)),o.then(e=>{a&&e.addEventListener("close",()=>a()),i&&e.addEventListener("versionchange",e=>i(e.oldVersion,e.newVersion,e))}).catch(()=>{}),o}(Ee,ye,{upgrade:(e,t)=>{if(0===t)try{e.createObjectStore(we)}catch(e){console.warn(e)}}}).catch(e=>{throw de.create("idb-open",{originalErrorMessage:e.message})}),Ce}async function Ie(e,t){try{const n=await De(),i=n.transaction(we,"readwrite"),a=i.objectStore(we);await a.put(t,Se(e)),await i.done}catch(e){var r;e instanceof o?Q.warn(e.message):(r=de.create("idb-set",{originalErrorMessage:null==e?void 0:e.message}),Q.warn(r.message))}}function Se(e){return`${e.name}!${e.options.appId}`}class Oe{constructor(e){this.container=e,this._heartbeatsCache=null;var t=this.container.getProvider("app").getImmediate();this._storage=new Le(t),this._heartbeatsCachePromise=this._storage.read().then(e=>this._heartbeatsCache=e)}async triggerHeartbeat(){var e;const t=this.container.getProvider("platform-logger").getImmediate();var r=t.getPlatformInfoString();const n=Ae();if((null!=(null===(e=this._heartbeatsCache)||void 0===e?void 0:e.heartbeats)||(this._heartbeatsCache=await this._heartbeatsCachePromise,null!=(null===(e=this._heartbeatsCache)||void 0===e?void 0:e.heartbeats)))&&this._heartbeatsCache.lastSentHeartbeatDate!==n&&!this._heartbeatsCache.heartbeats.some(e=>e.date===n))return this._heartbeatsCache.heartbeats.push({date:n,agent:r}),this._heartbeatsCache.heartbeats=this._heartbeatsCache.heartbeats.filter(e=>{var t=new Date(e.date).valueOf();return Date.now()-t<=2592e6}),this._storage.overwrite(this._heartbeatsCache)}async getHeartbeatsHeader(){if(null===this._heartbeatsCache&&await this._heartbeatsCachePromise,null==(null===(r=this._heartbeatsCache)||void 0===r?void 0:r.heartbeats)||0===this._heartbeatsCache.heartbeats.length)return"";var e=Ae(),{heartbeatsToSend:t,unsentEntries:r}=function(e,t=1024){const r=[];let n=e.slice();for(const i of e){const a=r.find(e=>e.agent===i.agent);if(a){if(a.dates.push(i.date),Ne(r)>t){a.dates.pop();break}}else if(r.push({agent:i.agent,dates:[i.date]}),Ne(r)>t){r.pop();break}n=n.slice(1)}return{heartbeatsToSend:r,unsentEntries:n}}(this._heartbeatsCache.heartbeats),t=i(JSON.stringify({version:2,heartbeats:t}));return this._heartbeatsCache.lastSentHeartbeatDate=e,0<r.length?(this._heartbeatsCache.heartbeats=r,await this._storage.overwrite(this._heartbeatsCache)):(this._heartbeatsCache.heartbeats=[],this._storage.overwrite(this._heartbeatsCache)),t}}function Ae(){const e=new Date;return e.toISOString().substring(0,10)}class Le{constructor(e){this.app=e,this._canUseIndexedDBPromise=this.runIndexedDBEnvironmentCheck()}async runIndexedDBEnvironmentCheck(){return!!function(){try{return"object"==typeof indexedDB}catch(e){return}}()&&new Promise((t,r)=>{try{let e=!0;const n="validate-browser-context-for-indexeddb-analytics-module",i=self.indexedDB.open(n);i.onsuccess=()=>{i.result.close(),e||self.indexedDB.deleteDatabase(n),t(!0)},i.onupgradeneeded=()=>{e=!1},i.onerror=()=>{var e;r((null===(e=i.error)||void 0===e?void 0:e.message)||"")}}catch(e){r(e)}}).then(()=>!0).catch(()=>!1)}async read(){if(await this._canUseIndexedDBPromise){var e=await async function(e){try{const r=await De(),n=r.transaction(we);var t=await n.objectStore(we).get(Se(e));return await n.done,t}catch(e){e instanceof o?Q.warn(e.message):(t=de.create("idb-get",{originalErrorMessage:null==e?void 0:e.message}),Q.warn(t.message))}}(this.app);return null!=e&&e.heartbeats?e:{heartbeats:[]}}return{heartbeats:[]}}async overwrite(e){var t;if(await this._canUseIndexedDBPromise){var r=await this.read();return Ie(this.app,{lastSentHeartbeatDate:null!==(t=e.lastSentHeartbeatDate)&&void 0!==t?t:r.lastSentHeartbeatDate,heartbeats:e.heartbeats})}}async add(e){var t;if(await this._canUseIndexedDBPromise){var r=await this.read();return Ie(this.app,{lastSentHeartbeatDate:null!==(t=e.lastSentHeartbeatDate)&&void 0!==t?t:r.lastSentHeartbeatDate,heartbeats:[...r.heartbeats,...e.heartbeats]})}}}function Ne(e){return i(JSON.stringify({version:2,heartbeats:e})).length}ee="",ce(new E("platform-logger",e=>new X(e),"PRIVATE")),ce(new E("heartbeat",e=>new Oe(e),"PRIVATE")),me(q,Z,ee),me(q,Z,"esm2017"),me("fire-js","");var Be=Object.freeze({__proto__:null,SDK_VERSION:fe,_DEFAULT_ENTRY_NAME:te,_addComponent:se,_addOrOverwriteComponent:oe,_apps:ne,_clearComponents:function(){ae.clear()},_components:ae,_getProvider:le,_isFirebaseApp:he,_isFirebaseServerApp:function(e){return void 0!==e.settings},_registerComponent:ce,_removeServiceInstance:function(e,t,r=te){le(e,t).clearInstance(r)},_serverApps:ie,deleteApp:be,getApp:function(e=te){var t=ne.get(e);if(!t&&e===te&&h())return ge();if(!t)throw de.create("no-app",{appName:e});return t},getApps:function(){return Array.from(ne.values())},initializeApp:ge,initializeServerApp:function(e,t){if(d())throw de.create("invalid-server-app-environment");void 0===t.automaticDataCollectionEnabled&&(t.automaticDataCollectionEnabled=!1);let r;r=he(e)?e.options:e;const n=Object.assign(Object.assign({},t),r);if(void 0!==n.releaseOnDeref&&delete n.releaseOnDeref,void 0!==t.releaseOnDeref&&"undefined"==typeof FinalizationRegistry)throw de.create("finalization-registry-not-supported",{});var i=""+[...JSON.stringify(n)].reduce((e,t)=>Math.imul(31,e)+t.charCodeAt(0)|0,0);const a=ie.get(i);if(a)return a.incRefCount(t.releaseOnDeref),a;const s=new C(i);for(const c of ae.values())s.addComponent(c);var o=new pe(r,t,i,s);return ie.set(i,o),o},onLog:ve,registerVersion:me,setLogLevel:_e,FirebaseError:o});class Te{constructor(e,t){this._delegate=e,this.firebase=t,se(e,new E("app-compat",()=>this,"PUBLIC")),this.container=e.container}get automaticDataCollectionEnabled(){return this._delegate.automaticDataCollectionEnabled}set automaticDataCollectionEnabled(e){this._delegate.automaticDataCollectionEnabled=e}get name(){return this._delegate.name}get options(){return this._delegate.options}delete(){return new Promise(e=>{this._delegate.checkDestroyed(),e()}).then(()=>(this.firebase.INTERNAL.removeApp(this.name),be(this._delegate)))}_getService(e,t=te){var r;this._delegate.checkDestroyed();const n=this._delegate.container.getProvider(e);return n.isInitialized()||"EXPLICIT"!==(null===(r=n.getComponent())||void 0===r?void 0:r.instantiationMode)||n.initialize(),n.getImmediate({identifier:t})}_removeServiceInstance(e,t=te){this._delegate.container.getProvider(e).clearInstance(t)}_addComponent(e){se(this._delegate,e)}_addOrOverwriteComponent(e){oe(this._delegate,e)}toJSON(){return{name:this.name,automaticDataCollectionEnabled:this.automaticDataCollectionEnabled,options:this.options}}}const Re=new u("app-compat","Firebase",{"no-app":"No Firebase App '{$appName}' has been created - call Firebase App.initializeApp()","invalid-app-argument":"firebase.{$appName}() takes either no argument or a Firebase App instance."});function Pe(i){const a={},s={__esModule:!0,initializeApp:function(e,t={}){var r=ge(e,t);if(f(a,r.name))return a[r.name];var n=new i(r,s);return a[r.name]=n},app:o,registerVersion:me,setLogLevel:_e,onLog:ve,apps:null,SDK_VERSION:fe,INTERNAL:{registerComponent:function(r){const n=r.name,t=n.replace("-compat","");{var e;ce(r)&&"PUBLIC"===r.type&&(e=(e=o())=>{if("function"!=typeof e[t])throw Re.create("invalid-app-argument",{appName:n});return e[t]()},void 0!==r.serviceProps&&c(e,r.serviceProps),s[t]=e,i.prototype[t]=function(...e){const t=this._getService.bind(this,n);return t.apply(this,r.multipleInstances?e:[])})}return"PUBLIC"===r.type?s[t]:null},removeApp:function(e){delete a[e]},useAsService:function(e,t){if("serverAuth"===t)return null;var r=t;return r},modularAPIs:Be}};function o(e){if(e=e||te,!f(a,e))throw Re.create("no-app",{appName:e});return a[e]}return s.default=s,Object.defineProperty(s,"apps",{get:function(){return Object.keys(a).map(e=>a[e])}}),o.App=i,s}var Me=function e(){const t=Pe(Te);return t.INTERNAL=Object.assign(Object.assign({},t.INTERNAL),{createFirebaseNamespace:e,extendNamespace:function(e){c(t,e)},createSubscribe:m,ErrorFactory:u,deepExtend:c}),t}();const ke=new T("@firebase/app-compat");if(d()&&void 0!==self.firebase){ke.warn(`
@@ -1103,7 +1184,28 @@
 <div id="racing-game-screen" style="display:none;position:fixed;inset:0;z-index:293;background:#0a0a0f;flex-direction:column;overflow:hidden;">
   <div style="position:relative;z-index:1;width:100%;height:100%;display:flex;flex-direction:column;">
     <!-- 트랙 + 자동차 캔버스 -->
-    <canvas id="racing-canvas" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+    <!-- 3D 중계 화면 -->
+    <canvas id="racing-bcast"></canvas>
+    <!-- 미니맵 (트랙) -->
+    <div class="rc-minimap"><canvas id="racing-canvas"></canvas><div class="rc-minimap-label" id="rc-track-name">TRACK</div></div>
+    <!-- 상단 중계 HUD -->
+    <div class="rc-hud-top">
+      <div class="rc-pill rc-pos" id="rc-pos"><div class="k">POS</div><div class="v" id="rc-pos-val">P1</div></div>
+      <div class="rc-pill" id="rc-gap"><div class="k">GAP</div><div class="v" id="rc-gap-val">-0.0</div></div>
+      <div class="rc-pill"><div class="k">LAP</div><div class="v" id="rc-lap-val">1/3</div></div>
+      <div class="rc-pill"><div class="k">LAP TIME</div><div class="v" id="rc-time-val">0.0</div></div>
+      <div class="rc-pill"><div class="k">BEST</div><div class="v" id="rc-best-val">--</div></div>
+    </div>
+    <!-- 속도계 -->
+    <div class="rc-speedo">
+      <canvas id="rc-speedo-canvas"></canvas>
+      <div class="rc-speedo-read">
+        <div class="rc-speedo-val" id="rc-speed-val">0</div>
+        <div class="rc-speedo-unit">KM / H</div>
+        <div class="rc-gear" id="rc-gear">GEAR 1</div>
+      </div>
+    </div>
+    <div class="rc-flash" id="rc-flash"></div>
     <!-- 카운트다운 오버레이 -->
     <div id="racing-countdown" style="display:none;position:absolute;inset:0;z-index:5;background:rgba(10,10,15,0.7);flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
       <div style="font-family:'Rajdhani',sans-serif;font-size:20px;letter-spacing:4px;color:rgba(255,255,255,0.6);margin-bottom:12px;">READY</div>
@@ -1118,7 +1220,7 @@
       <div id="boost-active-msg" style="display:none;margin-top:16px;font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:#ffd700;text-shadow:0 0 20px rgba(255,215,0,0.5);">⚡ SPEED BOOST 활성화!</div>
     </div>
     <!-- 하단 타이핑 영역 -->
-    <div style="position:absolute;bottom:0;left:0;right:0;z-index:2;padding:16px 24px;background:linear-gradient(to top,rgba(10,10,15,0.98) 70%,transparent);">
+    <div id="rc-bottom-panel" style="position:absolute;bottom:0;left:0;right:0;z-index:2;padding:16px 24px;background:linear-gradient(to top,rgba(10,10,15,0.98) 70%,transparent);">
       <div style="max-width:700px;margin:0 auto;">
         <div class="text-display" style="margin-bottom:10px;"><div class="word-display" id="racing-text-display"></div></div>
         <div class="input-area">
@@ -3573,6 +3675,7 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
   let myLap = 1;           // 현재 랩 (1~3)
   let oppLap = 1;
   let boostActive = false; // Speed Boost 사용 여부
+  let oppShopCar = null;   // opponent equipped shop car (design sync)
   let lapTexts = [];       // 3개 랩 각각의 텍스트
   let racingRoomText = '';
 
@@ -3661,10 +3764,12 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
         if (cdNum) cdNum.style.fontSize = '140px';
         // 실제 게임 시작
         racingStartTime = Date.now();
+        RCX.start();
         if (inp) { inp.disabled = false; inp.focus(); }
       }
     }, 1000);
 
+    if (roomRef && myKey) roomRef.child(myKey).update({ shopCar: (window.equippedCar || null) });
     // 상대방 진행도 실시간 수신
     if (roomRef) {
       roomRef.child(oppKey).on('value', snap => {
@@ -3678,6 +3783,7 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
         }
         oppProgress = opp.progress || 0;
         oppLap = opp.lap || 1;
+        oppShopCar = opp.shopCar || null;
         const oppTotalProg = ((oppLap - 1) + oppProgress) / TOTAL_LAPS;
         const bar = document.getElementById('racing-opp-progress');
         if (bar) bar.style.width = (oppTotalProg * 100) + '%';
@@ -3698,18 +3804,53 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
   let racingCanvas, racingCtx, racingW, racingH;
   let trackPoints = [];
 
+  // ── 폴리라인을 Catmull-Rom 스플라인으로 부드럽게 (닫힌 루프) ──
+  function smoothClosed(pts, seg){
+    seg = seg || 12;
+    const n = pts.length, out = [];
+    if (n < 3) return pts.slice();
+    for (let i = 0; i < n; i++){
+      const p0 = pts[(i-1+n)%n], p1 = pts[i], p2 = pts[(i+1)%n], p3 = pts[(i+2)%n];
+      for (let j = 0; j < seg; j++){
+        const t = j/seg, t2 = t*t, t3 = t2*t;
+        out.push([
+          0.5*((2*p1[0]) + (-p0[0]+p2[0])*t + (2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2 + (-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
+          0.5*((2*p1[1]) + (-p0[1]+p2[1])*t + (2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2 + (-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)
+        ]);
+      }
+    }
+    out.push(out[0].slice());
+    return out;
+  }
+
   function initRacingCanvas() {
     racingCanvas = document.getElementById('racing-canvas');
     if (!racingCanvas || !selectedTrack) return;
-    racingW = racingCanvas.width  = window.innerWidth;
-    racingH = racingCanvas.height = window.innerHeight;
+    const box = racingCanvas.parentElement;
+    const cw = Math.max(80, (box ? box.clientWidth : 264) - 16);
+    const ch = Math.max(60, (box ? box.clientHeight : 190) - 16);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    racingCanvas.width  = Math.round(cw * dpr);
+    racingCanvas.height = Math.round(ch * dpr);
     racingCtx = racingCanvas.getContext('2d');
-    const scaleX = racingW / 400;
-    const scaleY = (racingH * 0.65) / 300;
-    trackPoints = selectedTrack.points.map(p => [p[0] * scaleX, p[1] * scaleY + 20]);
+    racingCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    racingW = cw; racingH = ch;
+
+    // 트랙을 미니맵 박스에 꽉 차게 맞춘다
+    const sm = smoothClosed(selectedTrack.points, 14);
+    let minX=1e9, maxX=-1e9, minY=1e9, maxY=-1e9;
+    sm.forEach(p => { if(p[0]<minX)minX=p[0]; if(p[0]>maxX)maxX=p[0]; if(p[1]<minY)minY=p[1]; if(p[1]>maxY)maxY=p[1]; });
+    const pad = 16;
+    const sc = Math.min((racingW-pad*2)/((maxX-minX)||1), (racingH-pad*2)/((maxY-minY)||1));
+    const ox = (racingW-(maxX-minX)*sc)/2 - minX*sc;
+    const oy = (racingH-(maxY-minY)*sc)/2 - minY*sc;
+    trackPoints = sm.map(p => [p[0]*sc+ox, p[1]*sc+oy]);
+
+    const nameEl = document.getElementById('rc-track-name');
+    if (nameEl) nameEl.textContent = (selectedTrack.flag||'') + ' ' + selectedTrack.name;
+    RCX.init();
     drawRacingCanvas();
   }
-
   function getPointOnTrack(progress) {
     if (!trackPoints.length) return {x:0,y:0,angle:0};
     const total = trackPoints.length - 1;
@@ -3724,55 +3865,535 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
     return { x, y, angle };
   }
 
+  // ══════════════════════════════════════════════════════════
+  //  미니맵 트랙 렌더링 (아스팔트 + 연석 + 레이싱 라인)
+  // ══════════════════════════════════════════════════════════
   function drawRacingCanvas() {
-    if (!racingCtx || !selectedTrack) return;
-    racingCtx.clearRect(0, 0, racingW, racingH);
-    const tc = selectedTrack.color;
+    if (!racingCtx || !selectedTrack || !trackPoints.length) return;
+    const c = racingCtx, tc = selectedTrack.color;
+    c.clearRect(0, 0, racingW, racingH);
+    const path = function(){ c.beginPath(); trackPoints.forEach(function(p,i){ i ? c.lineTo(p[0],p[1]) : c.moveTo(p[0],p[1]); }); };
+    c.lineCap = 'round'; c.lineJoin = 'round';
 
-    racingCtx.beginPath();
-    trackPoints.forEach((p,i) => i===0 ? racingCtx.moveTo(p[0],p[1]) : racingCtx.lineTo(p[0],p[1]));
-    racingCtx.strokeStyle = tc + '33';
-    racingCtx.lineWidth = 32;
-    racingCtx.lineCap = 'round';
-    racingCtx.lineJoin = 'round';
-    racingCtx.stroke();
+    path(); c.strokeStyle = tc+'1f'; c.lineWidth = 17; c.shadowColor = tc; c.shadowBlur = 15; c.stroke(); c.shadowBlur = 0;
+    path(); c.strokeStyle = '#15151e'; c.lineWidth = 11; c.stroke();
+    c.save(); c.globalAlpha = 0.34;
+    path(); c.strokeStyle = tc; c.lineWidth = 11; c.setLineDash([6,6]); c.stroke(); c.setLineDash([]);
+    c.restore();
+    path(); c.strokeStyle = tc; c.lineWidth = 1.5; c.shadowColor = tc; c.shadowBlur = 7; c.stroke(); c.shadowBlur = 0;
+    path(); c.strokeStyle = 'rgba(255,255,255,0.26)'; c.lineWidth = 1; c.setLineDash([3,9]); c.stroke(); c.setLineDash([]);
 
-    racingCtx.beginPath();
-    trackPoints.forEach((p,i) => i===0 ? racingCtx.moveTo(p[0],p[1]) : racingCtx.lineTo(p[0],p[1]));
-    racingCtx.strokeStyle = tc + '88';
-    racingCtx.lineWidth = 4;
-    racingCtx.setLineDash([20, 15]);
-    racingCtx.stroke();
-    racingCtx.setLineDash([]);
-
-    racingCtx.beginPath();
-    trackPoints.forEach((p,i) => i===0 ? racingCtx.moveTo(p[0],p[1]) : racingCtx.lineTo(p[0],p[1]));
-    racingCtx.strokeStyle = tc;
-    racingCtx.lineWidth = 2;
-    racingCtx.shadowColor = tc;
-    racingCtx.shadowBlur = 8;
-    racingCtx.stroke();
-    racingCtx.shadowBlur = 0;
-
-    // 전체 진행도 = (완료 랩 + 현재 랩 진행도) 를 트랙 한 바퀴로 매핑
-    // 각 랩마다 트랙을 한 바퀴 도는 것으로 표현
-    const myTrackPos = ((myLap - 1) + myProgress) % 1;
-    const oppTrackPos = ((oppLap - 1) + oppProgress) % 1;
-    const myPos = getPointOnTrack(myTrackPos);
-    drawRacingCar(myPos.x, myPos.y, getCarColor(selectedCarId), false, myPos.angle);
-    const oppPos = getPointOnTrack(oppTrackPos);
-    drawRacingCar(oppPos.x, oppPos.y, '#ff4466', true, oppPos.angle);
-
-    if (trackPoints[0]) {
-      const sx = trackPoints[0][0], sy = trackPoints[0][1];
-      racingCtx.fillStyle = '#fff';
-      racingCtx.font = 'bold 14px Rajdhani';
-      racingCtx.fillText('START', sx-20, sy-16);
-      racingCtx.fillStyle = '#ffd700';
-      racingCtx.fillRect(sx-15, sy-10, 30, 4);
+    // 스타트/피니시 체커
+    const q0 = trackPoints[0], q1 = trackPoints[1] || trackPoints[0];
+    const ang = Math.atan2(q1[1]-q0[1], q1[0]-q0[0]);
+    c.save(); c.translate(q0[0], q0[1]); c.rotate(ang);
+    for (let i = 0; i < 6; i++){
+      c.fillStyle = (i % 2 === 0) ? '#ffffff' : '#0f0f16';
+      c.fillRect(-2, -7 + i*2.4, 4, 2.4);
     }
+    c.restore();
+
+    // 차량 마커
+    const marker = function(prog, col, label){
+      const pos = getPointOnTrack(prog);
+      c.save(); c.translate(pos.x, pos.y); c.rotate(pos.angle);
+      c.shadowColor = col; c.shadowBlur = 11; c.fillStyle = col;
+      c.beginPath(); c.moveTo(0,-5.5); c.lineTo(3.6,4.2); c.lineTo(0,2.2); c.lineTo(-3.6,4.2); c.closePath(); c.fill();
+      c.shadowBlur = 0; c.restore();
+      c.fillStyle = col; c.font = '700 8px Rajdhani, sans-serif'; c.textAlign = 'center';
+      c.fillText(label, pos.x, pos.y - 9);
+      c.textAlign = 'left';
+    };
+    marker(((oppLap-1)+oppProgress)%1, '#ff4466', 'OPP');
+    marker(((myLap-1)+myProgress)%1, getCarColor(selectedCarId), 'YOU');
   }
 
+  // ══════════════════════════════════════════════════════════
+  //  RCX — 3D 중계 화면 · 실시간 속도 · 레이스 HUD
+  // ══════════════════════════════════════════════════════════
+  const RCX = (function(){
+    let bc, bx, bw = 0, bh = 0, dpr = 1;
+    let sc, sx;
+    let raf = null, last = 0, running = false;
+    let scrollZ = 0;
+    let speed = 0, targetSpeed = 0;
+    let stamps = [];
+    let rateHist = [], lastProg = 0, lastProgT = 0, progRate = 0;
+    let prevGap = 0, shake = 0;
+    let lapStart = 0, bestLap = 0;
+    const MAXKMH = 340;
+
+    function totalOf(lap, prog){ return ((lap-1) + prog) / TOTAL_LAPS; }
+
+    function init(){
+      bc = document.getElementById('racing-bcast');
+      sc = document.getElementById('rc-speedo-canvas');
+      if (!bc) return;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      resize();
+      if (!init._bound){
+        window.addEventListener('resize', resize);
+        document.addEventListener('visibilitychange', function(){ if (!document.hidden) resize(); });
+        init._bound = true;
+      }
+    }
+
+    function resize(){
+      if (!bc) return;
+      // canvas 고유 크기에 휘둘리지 않도록 부모 기준으로 직접 계산한다
+      const host = bc.parentElement || document.body;
+      const panel = document.getElementById('rc-bottom-panel');
+      const reserve = (panel && panel.offsetHeight) ? panel.offsetHeight : 232;
+      const availW = host.clientWidth, availH = host.clientHeight - reserve;
+      // 탭이 숨겨져 있으면 clientHeight 가 0으로 잡혀 캔버스가 찌그러진다 -> 이전 크기 유지
+      if (availW < 120 || availH < 100) return;
+      bw = availW;
+      bh = availH;
+      bc.style.width = bw + 'px';
+      bc.style.height = bh + 'px';
+      bc.width = Math.round(bw*dpr); bc.height = Math.round(bh*dpr);
+      bx = bc.getContext('2d'); bx.setTransform(dpr,0,0,dpr,0,0);
+      if (sc){
+        const s = sc.getBoundingClientRect();
+        const sw = Math.max(60, s.width), sh = Math.max(60, s.height);
+        sc.width = Math.round(sw*dpr); sc.height = Math.round(sh*dpr);
+        sx = sc.getContext('2d'); sx.setTransform(dpr,0,0,dpr,0,0);
+        sc._w = sw; sc._h = sh;
+      }
+    }
+
+    function start(){
+      init();
+      speed = 0; targetSpeed = 0; stamps = []; scrollZ = 0;
+      prevGap = 0; shake = 0;
+      lapStart = performance.now(); bestLap = 0;
+      lastProg = 0; lastProgT = performance.now(); progRate = 0; rateHist = [];
+      if (!running){ running = true; last = performance.now(); raf = requestAnimationFrame(loop); }
+    }
+
+    function stop(){ running = false; if (raf) cancelAnimationFrame(raf); raf = null; }
+
+    function onType(){ stamps.push(performance.now()); if (stamps.length > 160) stamps.shift(); }
+
+    function onLap(){
+      const t = (performance.now() - lapStart)/1000;
+      if (t > 1 && (!bestLap || t < bestLap)) bestLap = t;
+      lapStart = performance.now();
+    }
+
+    function loop(now){
+      if (!running) return;
+      const dt = Math.min((now - last)/1000, 0.05); last = now;
+
+      const win = 1400;
+      while (stamps.length && now - stamps[0] > win) stamps.shift();
+      const cps = stamps.length / (win/1000);
+      targetSpeed = Math.min(MAXKMH, cps * 42 * (boostActive ? 1.6 : 1));
+      const k = targetSpeed > speed ? 2.6 : 1.5;
+      speed += (targetSpeed - speed) * Math.min(1, k*dt);
+      if (speed < 0.6) speed = 0;
+
+      const myT = totalOf(myLap, myProgress);
+      if (now - lastProgT > 220){
+        const r = (myT - lastProg) / ((now - lastProgT)/1000);
+        rateHist.push(Math.max(0, r)); if (rateHist.length > 12) rateHist.shift();
+        progRate = rateHist.reduce(function(a,b){ return a+b; }, 0) / rateHist.length;
+        lastProg = myT; lastProgT = now;
+      }
+
+      scrollZ += speed * dt * 0.016;
+      if (shake > 0) shake = Math.max(0, shake - dt*2.4);
+
+      drawBroadcast(now);
+      drawSpeedo();
+      updateHud();
+      raf = requestAnimationFrame(loop);
+    }
+
+    function proj(z, horizon){
+      const s = 1/(1 + Math.max(0,z)*1.05);
+      return { y: horizon + (bh - horizon)*s, s: s };
+    }
+
+    // ── 상점 차량별 색상 + 뒷모습 디자인 ──
+    const CAR_STYLES = {
+      car_front:  { color:'#ff2d4d', w:1.00, h:1.00, roof:0.86, wing:'big',      lights:'quad'     },
+      car_yellow: { color:'#ffd21e', w:0.96, h:1.14, roof:1.04, wing:'lip',      lights:'lshape'   },
+      car_blue:   { color:'#35d0ff', w:1.12, h:0.92, roof:0.80, wing:'medium',   lights:'bar'      },
+      car_green:  { color:'#23ff7a', w:1.00, h:0.98, roof:0.90, wing:'ducktail', lights:'bar'      },
+      car_white:  { color:'#e8e8f0', w:0.94, h:1.30, roof:1.18, wing:'none',     lights:'vertical' },
+      car_purple: { color:'#b06bff', w:1.10, h:0.88, roof:0.76, wing:'big',      lights:'hex'      }
+    };
+    function carStyleFor(shopId, fallbackColor){
+      const s = shopId && CAR_STYLES[shopId];
+      if (s) return s;
+      return { color: fallbackColor, w:1.00, h:1.00, roof:0.88, wing:'medium', lights:'quad' };
+    }
+
+    let curveSmooth = 0;      // 트랙 곡률 (부드럽게 추종)
+    let myLaneS = -0.34;      // 내 차선
+    let oppLaneS = 0.34;      // 상대 차선
+
+    // 현재 위치의 트랙 곡률 (-1 좌 ~ +1 우)
+    function trackCurveAt(prog){
+      if (!trackPoints.length) return 0;
+      const a0 = getPointOnTrack(((prog % 1) + 1) % 1).angle;
+      const a1 = getPointOnTrack(((prog + 0.022) % 1 + 1) % 1).angle;
+      let d = a1 - a0;
+      while (d >  Math.PI) d -= Math.PI*2;
+      while (d < -Math.PI) d += Math.PI*2;
+      return Math.max(-1, Math.min(1, d * 3.2));
+    }
+
+    function roundBox(g,x,y,w,h,r){
+      if (g.roundRect){ g.roundRect(x,y,w,h,r); return; }
+      g.moveTo(x+r,y); g.lineTo(x+w-r,y); g.quadraticCurveTo(x+w,y,x+w,y+r);
+      g.lineTo(x+w,y+h-r); g.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+      g.lineTo(x+r,y+h); g.quadraticCurveTo(x,y+h,x,y+h-r);
+      g.lineTo(x,y+r); g.quadraticCurveTo(x,y,x+r,y);
+    }
+
+    // ── 차량 뒷모습 (상점 차량 디자인 반영) ──
+    function drawCar(g, cx, baseY, s, style, tag){
+      const color = style.color;
+      const w = 190*s*style.w, h = 74*s*style.h;
+      if (w < 4) return;
+      const roofY = -h*style.roof;
+      g.save(); g.translate(cx, baseY);
+
+      // 바닥 글로우
+      const gl = g.createRadialGradient(0,0,1,0,0,Math.max(2,w*0.8));
+      gl.addColorStop(0, color+'55'); gl.addColorStop(1, color+'00');
+      g.fillStyle = gl; g.beginPath(); g.ellipse(0, 0, w*0.8, h*0.26, 0, 0, Math.PI*2); g.fill();
+
+      // 바퀴
+      g.fillStyle = '#0b0b11';
+      g.fillRect(-w*0.54, -h*0.60, w*0.17, h*0.60);
+      g.fillRect( w*0.37, -h*0.60, w*0.17, h*0.60);
+
+      // 차체 실루엣 — roof 값에 따라 스포츠카/세단/리무진 형태가 달라진다
+      g.beginPath();
+      g.moveTo(-w*0.46, 0);
+      g.lineTo(-w*0.42, -h*0.52);
+      g.lineTo(-w*0.27, roofY);
+      g.lineTo( w*0.27, roofY);
+      g.lineTo( w*0.42, -h*0.52);
+      g.lineTo( w*0.46, 0);
+      g.closePath();
+      const bg = g.createLinearGradient(0, roofY, 0, 0);
+      bg.addColorStop(0, color+'3a'); bg.addColorStop(1, color+'12');
+      g.fillStyle = bg; g.fill();
+      g.strokeStyle = color; g.lineWidth = Math.max(1, 3.4*s);
+      g.shadowColor = color; g.shadowBlur = 16*Math.min(1,s*2); g.stroke(); g.shadowBlur = 0;
+
+      // 리어 윈도우
+      g.globalAlpha = 0.30; g.fillStyle = '#000';
+      g.beginPath();
+      g.moveTo(-w*0.24, roofY + h*0.04);
+      g.lineTo( w*0.24, roofY + h*0.04);
+      g.lineTo( w*0.30, roofY + h*0.30);
+      g.lineTo(-w*0.30, roofY + h*0.30);
+      g.closePath(); g.fill(); g.globalAlpha = 1;
+
+      // 리어 윙
+      g.fillStyle = color;
+      if (style.wing === 'big'){
+        g.globalAlpha = 0.95;
+        g.fillRect(-w*0.40, roofY - h*0.26, w*0.80, h*0.09);
+        g.fillRect(-w*0.32, roofY - h*0.26, w*0.045, h*0.26);
+        g.fillRect( w*0.275, roofY - h*0.26, w*0.045, h*0.26);
+      } else if (style.wing === 'medium'){
+        g.globalAlpha = 0.9;
+        g.fillRect(-w*0.36, roofY - h*0.13, w*0.72, h*0.075);
+        g.fillRect(-w*0.28, roofY - h*0.13, w*0.04, h*0.13);
+        g.fillRect( w*0.24, roofY - h*0.13, w*0.04, h*0.13);
+      } else if (style.wing === 'ducktail'){
+        g.globalAlpha = 0.85;
+        g.beginPath();
+        g.moveTo(-w*0.34, roofY + h*0.02);
+        g.quadraticCurveTo(0, roofY - h*0.12, w*0.34, roofY + h*0.02);
+        g.lineTo(w*0.34, roofY + h*0.07);
+        g.quadraticCurveTo(0, roofY - h*0.05, -w*0.34, roofY + h*0.07);
+        g.closePath(); g.fill();
+      } else if (style.wing === 'lip'){
+        g.globalAlpha = 0.8;
+        g.fillRect(-w*0.30, roofY - h*0.05, w*0.60, h*0.05);
+      }
+      g.globalAlpha = 1;
+
+      // 테일램프
+      const ly = -h*0.44, lh = h*0.13;
+      g.shadowColor = '#ff2d4d'; g.shadowBlur = 13*Math.min(1,s*2); g.fillStyle = '#ff2d4d';
+      if (style.lights === 'bar'){
+        g.fillRect(-w*0.36, ly, w*0.72, lh*0.75);
+      } else if (style.lights === 'lshape'){
+        g.fillRect(-w*0.37, ly, w*0.20, lh);
+        g.fillRect( w*0.17, ly, w*0.20, lh);
+        g.fillRect(-w*0.37, ly+lh, w*0.07, lh*0.7);
+        g.fillRect( w*0.30, ly+lh, w*0.07, lh*0.7);
+      } else if (style.lights === 'vertical'){
+        g.fillRect(-w*0.38, ly-lh*0.3, w*0.075, lh*1.7);
+        g.fillRect( w*0.305, ly-lh*0.3, w*0.075, lh*1.7);
+      } else if (style.lights === 'hex'){
+        [-1,1].forEach(function(sd){
+          g.beginPath();
+          const bx0 = sd*w*0.27;
+          g.moveTo(bx0 - w*0.10, ly + lh*0.5);
+          g.lineTo(bx0 - w*0.05, ly);
+          g.lineTo(bx0 + w*0.05, ly);
+          g.lineTo(bx0 + w*0.10, ly + lh*0.5);
+          g.lineTo(bx0 + w*0.05, ly + lh);
+          g.lineTo(bx0 - w*0.05, ly + lh);
+          g.closePath(); g.fill();
+        });
+      } else {
+        g.fillRect(-w*0.34, ly, w*0.14, lh);
+        g.fillRect(-w*0.17, ly, w*0.09, lh);
+        g.fillRect( w*0.08, ly, w*0.09, lh);
+        g.fillRect( w*0.20, ly, w*0.14, lh);
+      }
+      g.shadowBlur = 0;
+
+      // 배기구
+      g.fillStyle = 'rgba(255,255,255,0.18)';
+      g.fillRect(-w*0.20, -h*0.10, w*0.10, h*0.05);
+      g.fillRect( w*0.10, -h*0.10, w*0.10, h*0.05);
+
+      if (tag && s > 0.22){
+        g.fillStyle = 'rgba(255,255,255,0.78)';
+        g.font = '700 ' + Math.round(12*Math.min(1.4,s*1.6)) + 'px Rajdhani, sans-serif';
+        g.textAlign = 'center'; g.fillText(tag, 0, roofY - h*0.42); g.textAlign = 'left';
+      }
+      g.restore();
+    }
+
+    function drawBroadcast(now){
+      if (!bx) return;
+      const g = bx, tc = (selectedTrack && selectedTrack.color) || '#ff2d4d';
+      const horizon = bh*0.40;
+      const shakeY = shake>0 ? (Math.random()-0.5)*shake*5 : 0;
+      g.clearRect(0,0,bw,bh);
+      g.save(); g.translate(0, shakeY);
+
+      // 트랙 곡률을 부드럽게 추종 → 코스에 따라 도로가 휘어진다
+      const target = trackCurveAt(((myLap-1)+myProgress) % 1);
+      curveSmooth += (target - curveSmooth) * 0.05;
+      const CURVE = curveSmooth * 190;
+
+      // 하늘 + 지평선 (코너 방향으로 소실점이 이동)
+      const vpx = bw/2 + CURVE*0.42;
+      const sky = g.createLinearGradient(0,0,0,horizon);
+      sky.addColorStop(0,'#07070c'); sky.addColorStop(1,'#12121d');
+      g.fillStyle = sky; g.fillRect(0,-10,bw,horizon+10);
+      const hg = g.createRadialGradient(vpx,horizon,2,vpx,horizon,bw*0.55);
+      hg.addColorStop(0, tc+'44'); hg.addColorStop(1, tc+'00');
+      g.fillStyle = hg; g.fillRect(0,0,bw,horizon+40);
+      for (let i=0;i<26;i++){
+        const x = ((i*137.5)%bw), y = horizon - ((i*53)%horizon)*0.85 - 4;
+        g.globalAlpha = 0.10 + ((i*7)%10)/45;
+        g.fillStyle = (i%4===0) ? tc : '#ffffff';
+        g.fillRect(x, y, 1.6, 1.6);
+      }
+      g.globalAlpha = 1;
+
+      // ── 깊이 슬라이스로 도로를 만든다 (곡률 반영) ──
+      const roadW = bw*0.92;
+      const N = 70, ZMAX = 9;
+      const sl = [];
+      for (let i=0;i<=N;i++){
+        const z = (i/N)*ZMAX;
+        const p = proj(z, horizon);
+        sl.push({ z:z, y:p.y, s:p.s, cx: bw/2 + CURVE*(z*z)/(ZMAX*ZMAX)*2.2*(1-p.s*0.25), hw: roadW*p.s*0.5 });
+      }
+      function centerAt(z){
+        const p = proj(z, horizon);
+        return bw/2 + CURVE*(z*z)/(ZMAX*ZMAX)*2.2*(1-p.s*0.25);
+      }
+      function halfWAt(z){ return roadW*proj(z, horizon).s*0.5; }
+
+      // 노면
+      g.beginPath();
+      g.moveTo(sl[0].cx - sl[0].hw, sl[0].y);
+      for (let i=1;i<=N;i++) g.lineTo(sl[i].cx - sl[i].hw, sl[i].y);
+      for (let i=N;i>=0;i--) g.lineTo(sl[i].cx + sl[i].hw, sl[i].y);
+      g.closePath();
+      const gr = g.createLinearGradient(0,horizon,0,bh);
+      gr.addColorStop(0,'#0d0d14'); gr.addColorStop(1,'#1b1b26');
+      g.fillStyle = gr; g.fill();
+
+      // 연석 + 차선 (world 좌표로 스크롤)
+      const DASH = 1.05;
+      for (let i=0;i<N;i++){
+        const a = sl[i], b = sl[i+1];
+        const wz = a.z + scrollZ;
+        const on = (Math.floor(wz/DASH) % 2) === 0;
+        // 중앙 차선 (두 차선 구분)
+        if (on){
+          g.fillStyle = 'rgba(255,255,255,' + (0.34*b.s+0.05).toFixed(3) + ')';
+          g.beginPath();
+          g.moveTo(a.cx - a.hw*0.022, a.y); g.lineTo(a.cx + a.hw*0.022, a.y);
+          g.lineTo(b.cx + b.hw*0.022, b.y); g.lineTo(b.cx - b.hw*0.022, b.y);
+          g.closePath(); g.fill();
+        }
+        // 좌우 연석
+        g.fillStyle = on ? '#ff3355' : '#f0f0f5';
+        g.globalAlpha = 0.32*b.s + 0.10;
+        g.beginPath();
+        g.moveTo(a.cx-a.hw, a.y); g.lineTo(a.cx-a.hw*0.93, a.y);
+        g.lineTo(b.cx-b.hw*0.93, b.y); g.lineTo(b.cx-b.hw, b.y); g.closePath(); g.fill();
+        g.beginPath();
+        g.moveTo(a.cx+a.hw, a.y); g.lineTo(a.cx+a.hw*0.93, a.y);
+        g.lineTo(b.cx+b.hw*0.93, b.y); g.lineTo(b.cx+b.hw, b.y); g.closePath(); g.fill();
+        g.globalAlpha = 1;
+      }
+
+      // 사이드 라인
+      g.strokeStyle = tc; g.lineWidth = 2; g.globalAlpha = 0.55;
+      g.shadowColor = tc; g.shadowBlur = 12;
+      g.beginPath(); g.moveTo(sl[0].cx-sl[0].hw, sl[0].y);
+      for (let i=1;i<=N;i++) g.lineTo(sl[i].cx-sl[i].hw, sl[i].y);
+      g.stroke();
+      g.beginPath(); g.moveTo(sl[0].cx+sl[0].hw, sl[0].y);
+      for (let i=1;i<=N;i++) g.lineTo(sl[i].cx+sl[i].hw, sl[i].y);
+      g.stroke();
+      g.shadowBlur = 0; g.globalAlpha = 1;
+
+      // ── 차량 배치 (서로 다른 차선) ──
+      const myT  = totalOf(myLap, myProgress);
+      const oppT = totalOf(oppLap, oppProgress);
+      const gap  = oppT - myT;
+      const myZ  = 0.30;
+      const oppZ = myZ + gap * 26;
+
+      // 앞선 쪽이 안쪽(레이싱 라인) 차선을 잡는다
+      const myTargetLane  = (gap > 0) ? -0.34 :  0.34;
+      const oppTargetLane = (gap > 0) ?  0.34 : -0.34;
+      myLaneS  += (myTargetLane  - myLaneS ) * 0.045;
+      oppLaneS += (oppTargetLane - oppLaneS) * 0.045;
+
+      const myStyle  = carStyleFor(window.equippedCar, getCarColor(selectedCarId));
+      const oppStyle = carStyleFor(oppShopCar, '#ff4466');
+
+      if (gap > 0 && oppZ < ZMAX){
+        const p = proj(oppZ, horizon);
+        drawCar(g, centerAt(oppZ) + oppLaneS*halfWAt(oppZ), p.y, p.s*0.95, oppStyle, opponentName || 'OPP');
+      }
+      const mp = proj(myZ, horizon);
+      drawCar(g, centerAt(myZ) + myLaneS*halfWAt(myZ), mp.y, mp.s, myStyle, null);
+
+      // 속도 스트릭
+      if (speed > 40){
+        const n = Math.min(16, Math.round(speed/18));
+        g.strokeStyle = 'rgba(255,255,255,0.16)'; g.lineWidth = 1.4;
+        for (let i=0;i<n;i++){
+          const side = (i%2) ? 1 : -1;
+          const zz = ((scrollZ*2 + i*0.6) % 6);
+          const pp = proj(zz, horizon);
+          const len = 26*pp.s*(speed/MAXKMH)*3;
+          const xx = centerAt(zz) + side*(halfWAt(zz)*1.04);
+          g.globalAlpha = 0.5*pp.s;
+          g.beginPath(); g.moveTo(xx, pp.y); g.lineTo(xx + side*8*pp.s, pp.y + len); g.stroke();
+        }
+        g.globalAlpha = 1;
+      }
+
+      // 백미러 (상대가 뒤에 있을 때)
+      if (gap <= 0){
+        const mw = Math.min(230, bw*0.30), mh2 = mw*0.30, mx = bw/2 - mw/2, my = 88;
+        g.save();
+        g.fillStyle = 'rgba(6,6,11,0.88)';
+        g.strokeStyle = 'rgba(255,255,255,0.16)'; g.lineWidth = 1.5;
+        g.beginPath(); roundBox(g,mx,my,mw,mh2,9); g.fill(); g.stroke();
+        g.save(); g.beginPath(); roundBox(g,mx,my,mw,mh2,9); g.clip();
+        const behind = Math.min(1, Math.abs(gap)*26/9);
+        // 백미러에서는 좌우가 반전되어 보인다
+        drawCar(g, mx+mw/2 - oppLaneS*mw*0.30, my+mh2*0.92, (1-behind)*0.30 + 0.045, oppStyle, null);
+        g.restore();
+        g.fillStyle = 'rgba(255,255,255,0.34)';
+        g.font = '700 8px Rajdhani, sans-serif'; g.textAlign='center';
+        g.fillText('REAR VIEW', mx+mw/2, my+mh2-4); g.textAlign='left';
+        g.restore();
+      }
+
+      g.restore();
+
+      // 아래 경계가 딱 잘려 보이지 않도록 부드럽게 지운다
+      const fade = g.createLinearGradient(0, bh-46, 0, bh);
+      fade.addColorStop(0,'rgba(0,0,0,0)'); fade.addColorStop(1,'rgba(0,0,0,1)');
+      g.save(); g.globalCompositeOperation = 'destination-out';
+      g.fillStyle = fade; g.fillRect(0, bh-46, bw, 46); g.restore();
+
+      const vg = g.createRadialGradient(bw/2,bh*0.6,bh*0.25,bw/2,bh*0.6,bh*1.05);
+      vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.72)');
+      g.fillStyle = vg; g.fillRect(0,0,bw,bh);
+    }
+
+    function drawSpeedo(){
+      if (!sx || !sc) return;
+      const w = sc._w || 168, h = sc._h || 168;
+      const cx = w/2, cy = h/2, R = Math.min(w,h)/2 - 8;
+      sx.clearRect(0,0,w,h);
+      const A0 = Math.PI*0.75, A1 = Math.PI*2.25;
+      sx.lineCap = 'round';
+      sx.beginPath(); sx.arc(cx,cy,R,A0,A1); sx.strokeStyle='rgba(255,255,255,0.09)'; sx.lineWidth=7; sx.stroke();
+      const frac = Math.min(1, speed/MAXKMH);
+      const col = frac > 0.82 ? '#ff2d4d' : (frac > 0.55 ? '#ffd700' : ((selectedTrack && selectedTrack.color) || '#23ff7a'));
+      sx.beginPath(); sx.arc(cx,cy,R,A0,A0+(A1-A0)*frac);
+      sx.strokeStyle = col; sx.lineWidth = 7; sx.shadowColor = col; sx.shadowBlur = 14; sx.stroke(); sx.shadowBlur = 0;
+      for (let i=0;i<=8;i++){
+        const a = A0+(A1-A0)*(i/8);
+        sx.strokeStyle = 'rgba(255,255,255,0.20)'; sx.lineWidth = 1.5;
+        sx.beginPath();
+        sx.moveTo(cx+Math.cos(a)*(R-11), cy+Math.sin(a)*(R-11));
+        sx.lineTo(cx+Math.cos(a)*(R-5),  cy+Math.sin(a)*(R-5));
+        sx.stroke();
+      }
+      const na = A0+(A1-A0)*frac;
+      sx.strokeStyle = col; sx.lineWidth = 2.4; sx.shadowColor = col; sx.shadowBlur = 10;
+      sx.beginPath(); sx.moveTo(cx,cy); sx.lineTo(cx+Math.cos(na)*(R-14), cy+Math.sin(na)*(R-14)); sx.stroke();
+      sx.shadowBlur = 0;
+    }
+
+    function setText(id, v){ const e = document.getElementById(id); if (e && e.textContent !== v) e.textContent = v; }
+
+    function updateHud(){
+      setText('rc-speed-val', String(Math.round(speed)));
+      setText('rc-gear', 'GEAR ' + Math.max(1, Math.min(8, Math.floor(speed/45)+1)));
+
+      const myT = totalOf(myLap, myProgress), oppT = totalOf(oppLap, oppProgress);
+      const gap = myT - oppT;
+      const gapSec = Math.min(99.9, Math.abs(gap)/Math.max(progRate, 0.0008));
+      // 아직 달린 데이터가 없으면 초 단위 추정이 무의미하므로 -- 로 표시
+      const gapTxt = (progRate < 0.0016) ? '--' : ((gap >= 0 ? '-' : '+') + gapSec.toFixed(1));
+      setText('rc-pos-val', gap >= 0 ? 'P1' : 'P2');
+      const posEl = document.getElementById('rc-pos');
+      if (posEl){ posEl.classList.toggle('lead', gap >= 0); posEl.classList.toggle('trail', gap < 0); }
+      setText('rc-gap-val', gapTxt);
+      const gapEl = document.getElementById('rc-gap');
+      if (gapEl){ gapEl.classList.toggle('lead', gap >= 0); gapEl.classList.toggle('trail', gap < 0); }
+      setText('rc-lap-val', myLap + '/' + TOTAL_LAPS);
+      setText('rc-time-val', ((performance.now()-lapStart)/1000).toFixed(1));
+      setText('rc-best-val', bestLap ? bestLap.toFixed(1) : '--');
+
+      if (prevGap !== 0 && Math.sign(gap) !== Math.sign(prevGap) && Math.abs(gap) > 0.002){
+        flash(gap > 0 ? 'OVERTAKE!' : 'PASSED!', gap > 0);
+        shake = 1;
+      }
+      if (Math.abs(gap) > 0.0005) prevGap = gap;
+    }
+
+    function flash(msg, good){
+      const el = document.getElementById('rc-flash');
+      if (!el) return;
+      el.textContent = msg;
+      el.className = 'rc-flash ' + (good ? 'pass' : 'lost');
+      void el.offsetWidth;
+      el.classList.add('on');
+      setTimeout(function(){ el.classList.remove('on'); }, 1100);
+    }
+
+    return { init: init, start: start, stop: stop, onType: onType, onLap: onLap, resize: resize };
+  })();
   function drawRacingCar(x, y, color, isOpp, angle) {
     racingCtx.save();
     racingCtx.translate(x, y);
@@ -3903,6 +4524,7 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
       // Speed Boost: 한 글자당 2배 진행
       const effectiveChars = boostActive ? correctChars * 2 : correctChars;
       myProgress = Math.min(1, effectiveChars / racingText.length);
+      if (racingTyped.length > prevLen) RCX.onType();
       // 타이핑 사운드
       if (window.TypeSound && racingTyped.length > prevLen) {
         const li = racingTyped.length - 1;
@@ -3929,6 +4551,7 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
         if (myLap < TOTAL_LAPS) {
           // 다음 랩으로
           myLap++;
+          RCX.onLap();
           racingText = lapTexts[myLap - 1] || racingText;
           racingTyped = [];
           myProgress = 0;
@@ -3955,6 +4578,7 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
     const elapsed = ((Date.now() - racingStartTime) / 1000).toFixed(2);
     const inp = document.getElementById('racing-input');
     if (inp) inp.disabled = true;
+    RCX.stop();
     boostActive = false;  // 부스트 초기화
 
     // 전적 기록
