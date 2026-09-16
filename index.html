@@ -1146,11 +1146,11 @@
 </div>
 
 <!-- 트랙 선택 화면 -->
-<div id="racing-track-screen" style="display:none;position:fixed;inset:0;z-index:290;background:#0a0a0f;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;">
+<div id="racing-track-screen" style="display:none;position:fixed;inset:0;z-index:290;background:#0a0a0f;flex-direction:column;align-items:center;justify-content:center;overflow-y:auto;overflow-x:hidden;padding:24px 0 80px;">
   <div class="keycap-bg" id="keycap-bg-racing-track"></div>
   <div class="ms-logo" style="position:relative;z-index:1;">SELECT <span>TRACK</span></div>
   <div class="ms-sub" style="position:relative;z-index:1;">레이싱할 트랙을 선택하세요</div>
-  <div id="racing-track-grid" style="position:relative;z-index:1;display:flex;gap:24px;flex-wrap:wrap;justify-content:center;max-width:900px;padding:0 20px;"></div>
+  <div id="racing-track-grid" style="position:relative;z-index:1;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:1080px;padding:0 20px;"></div>
   <button class="corner-back-btn" id="racing-track-back-btn">← 돌아가기</button>
 </div>
 
@@ -3392,15 +3392,40 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
   }, 500);
 
   // ── 트랙 데이터 ──
+  // 2025 시즌 24개 서킷 — 실제 코스 형태를 400x300 좌표로 옮긴 것
+  // 형태가 확실히 구분되는 서킷만 선별 (비슷비슷한 타원형 코스는 제외)
   const TRACKS = [
-    { id:'monaco', name:'MONACO', flag:'🇲🇨', color:'#ff2d4d',
-      points:[[60,240],[60,160],[80,120],[140,80],[200,60],[260,60],[300,80],[340,100],[360,140],[340,180],[300,200],[260,180],[220,160],[180,160],[160,180],[160,220],[180,250],[220,260],[260,250],[300,240],[340,240],[360,220],[360,270],[300,280],[200,280],[100,270],[60,260],[60,240]] },
-    { id:'silverstone', name:'SILVERSTONE', flag:'🇬🇧', color:'#3da6ff',
-      points:[[80,150],[80,80],[160,60],[240,60],[320,80],[360,120],[360,180],[320,220],[280,240],[240,220],[200,200],[160,220],[120,250],[100,230],[80,200],[80,150]] },
-    { id:'suzuka', name:'SUZUKA', flag:'🇯🇵', color:'#23ff7a',
-      points:[[200,60],[280,60],[340,100],[360,160],[340,220],[280,260],[200,270],[160,250],[120,210],[100,170],[100,130],[120,90],[160,70],[200,60],[180,110],[160,140],[160,180],[180,210],[220,220],[260,210],[280,180],[280,140],[260,110],[220,100],[200,60]] },
-    { id:'spa', name:'SPA', flag:'🇧🇪', color:'#ffd700',
-      points:[[60,200],[80,120],[120,80],[180,60],[260,70],[320,100],[360,150],[340,210],[300,250],[240,260],[180,250],[140,220],[100,240],[80,260],[60,240],[60,200]] }
+    // 길고 좁은 코스 + 시케인 꺾임 2개
+    { id:'monza', name:'MONZA', flag:'🇮🇹', color:'#45d8ff',
+      points:[[146,46],[146,98],[174,108],[146,120],[146,168],[176,180],[146,192],[146,234],[156,258],[184,272],[218,274],[248,266],[270,248],[280,224],[282,192],[282,142],[282,98],[276,68],[256,50],[226,40],[192,38],[164,40]] },
+
+    // 한쪽 초장직선 + 좁은 구시가지 구간
+    { id:'baku', name:'BAKU', flag:'🇦🇿', color:'#9b7dff',
+      points:[[76,272],[76,210],[76,148],[78,106],[86,78],[104,58],[130,48],[158,48],[178,58],[186,76],[178,90],[158,92],[150,78],[160,66],[182,60],[212,56],[244,58],[272,68],[292,84],[304,106],[308,134],[306,166],[298,198],[284,226],[262,248],[232,262],[196,270],[152,272]] },
+
+    // 8자 교차 코스
+    { id:'suzuka', name:'SUZUKA', flag:'🇯🇵', color:'#e6edf7',
+      points:[[200,155],[166,142],[138,120],[128,94],[140,70],[168,54],[202,48],[236,52],[262,68],[272,94],[262,120],[236,140],[204,155],[238,172],[266,192],[280,218],[272,244],[248,262],[216,268],[184,264],[158,248],[146,222],[152,196],[172,176]] },
+
+    // 짧고 불규칙한 시가지 + 헤어핀 돌출
+    { id:'monaco', name:'MONACO', flag:'🇲🇨', color:'#ff3d6a',
+      points:[[112,236],[96,212],[92,186],[102,162],[120,144],[144,132],[170,128],[190,136],[198,152],[190,168],[170,174],[154,164],[160,148],[180,138],[208,130],[238,128],[268,134],[294,148],[312,168],[318,192],[312,214],[294,232],[268,244],[238,250],[206,250],[174,246],[142,242]] },
+
+    // 삼각형 코스
+    { id:'spielberg', name:'SPIELBERG', flag:'🇦🇹', color:'#23d18b',
+      points:[[86,252],[110,198],[136,146],[162,96],[186,58],[210,52],[232,72],[254,108],[278,152],[302,198],[324,244],[326,262],[292,262],[244,262],[194,262],[144,262],[104,262]] },
+
+    // 넓은 코스 + 바깥으로 튀어나온 루프
+    { id:'silverstone', name:'SILVERSTONE', flag:'🇬🇧', color:'#ffb454',
+      points:[[70,160],[78,124],[100,96],[132,76],[170,66],[210,64],[248,70],[280,86],[304,108],[330,118],[356,122],[366,142],[356,162],[330,168],[302,164],[278,152],[254,158],[236,178],[212,196],[182,210],[148,216],[114,212],[88,196],[72,176]] },
+
+    // 소용돌이 코너 + 긴 백스트레이트
+    { id:'shanghai', name:'SHANGHAI', flag:'🇨🇳', color:'#ff6ec7',
+      points:[[100,240],[86,212],[84,180],[94,150],[114,126],[142,110],[172,104],[198,112],[212,132],[206,154],[184,164],[166,154],[170,136],[188,132],[200,150],[218,172],[244,190],[276,202],[308,208],[334,218],[346,238],[334,256],[306,262],[272,262],[236,256],[200,246],[164,238],[130,238]] },
+
+    // 직각 코너 위주의 각진 시가지
+    { id:'singapore', name:'SINGAPORE', flag:'🇸🇬', color:'#ff9f45',
+      points:[[70,252],[70,192],[70,132],[70,82],[122,82],[174,82],[226,82],[278,82],[322,82],[322,128],[322,168],[272,168],[242,168],[242,208],[292,208],[332,208],[332,252],[280,252],[220,252],[160,252],[112,252]] }
   ];
 
   const RACING_CARS = [
@@ -3475,13 +3500,12 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
     grid.innerHTML = '';
     TRACKS.forEach(track => {
       const card = document.createElement('div');
-      card.style.cssText = 'background:#0e0e16;border:2px solid ' + track.color + '44;border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.22s;width:180px;';
+      card.style.cssText = 'background:#0e0e16;border:2px solid ' + track.color + '44;border-radius:12px;padding:12px 10px 10px;text-align:center;cursor:pointer;transition:all 0.22s;width:158px;';
       const pts = track.points.map(p=>p.join(',')).join(' ');
-      card.innerHTML = '<div style="font-size:28px;margin-bottom:8px;">' + track.flag + '</div>'
-        + '<svg width="160" height="110" viewBox="0 0 400 300" style="display:block;margin:0 auto 10px;">'
+      card.innerHTML = '<svg width="132" height="96" viewBox="0 0 400 300" style="display:block;margin:0 auto 6px;">'
         + '<polyline points="' + pts + '" fill="none" stroke="' + track.color + '" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 6px ' + track.color + ')"/>'
         + '</svg>'
-        + '<div style="font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:3px;color:' + track.color + ';">' + track.name + '</div>';
+        + '<div style="font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:2px;color:' + track.color + ';">' + track.name + '</div>';
       card.addEventListener('mouseenter', () => {
         card.style.borderColor = track.color;
         card.style.transform = 'translateY(-4px)';
@@ -3854,7 +3878,7 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
     trackPoints = sm.map(p => [p[0]*sc+ox, p[1]*sc+oy]);
 
     const nameEl = document.getElementById('rc-track-name');
-    if (nameEl) nameEl.textContent = (selectedTrack.flag||'') + ' ' + selectedTrack.name;
+    if (nameEl) nameEl.textContent = selectedTrack.name;
     RCX.init();
     drawRacingCanvas();
   }
@@ -4204,7 +4228,7 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
     //  도로 양옆 빌딩 — 높이/폭/간격이 제각각인 네온 시티
     // ══════════════════════════════════════════════════════════
     const BLD_SPACING = 0.62;          // 빌딩 슬롯 간격 (깊이 단위)
-    const BLD_NEON = ['#ff2d4d','#4fe3ff','#b06bff','#23ff7a','#ffd21e'];
+    const BLD_NEON = ['#ff3d6a','#45d8ff','#9b7dff','#e6edf7','#ffb454'];
 
     // 정수 -> 0~1 난수 (같은 빌딩은 항상 같은 모습)
     function bHash(n){
@@ -4301,7 +4325,7 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
                   const wx = x - wBase + cw*(c+1) - wW/2;
                   const wy = topY + ch*(r+1) - wH/2;
                   g.globalAlpha = (0.18 + lit*0.40) * fade;
-                  g.fillStyle = (lit > 0.88) ? neon : '#ffd9a0';
+                  g.fillStyle = neon;
                   g.fillRect(wx, wy, wW, wH);
                 }
               }
@@ -4312,8 +4336,8 @@ document.getElementById('detail-back-btn').addEventListener('click',()=>{
           if (h1 > 0.74 && s > 0.10){
             const blink = 0.45 + 0.55*Math.abs(Math.sin(performance.now()/420 + seed));
             g.globalAlpha = blink * fade;
-            g.fillStyle = '#ff3355';
-            g.shadowColor = '#ff3355'; g.shadowBlur = 12*s*3;
+            g.fillStyle = neon;
+            g.shadowColor = neon; g.shadowBlur = 12*s*3;
             const rr = Math.max(0.8, 2.2*s*2);
             g.beginPath(); g.arc(x, topY - rr*1.6, rr, 0, Math.PI*2); g.fill();
             g.shadowBlur = 0;
