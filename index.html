@@ -192,7 +192,6 @@
     font-size: 180px; letter-spacing: 20px;
     color: var(--accent);
     text-shadow: 0 0 40px rgba(var(--accent-r),var(--accent-g),var(--accent-b),0.5), 0 0 80px rgba(var(--accent-r),var(--accent-g),var(--accent-b),0.2);
-    animation: logoPulse 2.5s ease-in-out infinite;
     line-height: 1; margin-bottom: 12px;
     display: inline-block;
     transform-style: preserve-3d;
@@ -219,7 +218,6 @@
     border-radius: 8px; display: flex; align-items: center; justify-content: center;
     font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700;
     color: rgba(var(--accent-r),var(--accent-g),var(--accent-b),0.35); background: rgba(var(--accent-r),var(--accent-g),var(--accent-b),0.03);
-    transition: transform 0.25s cubic-bezier(0.23,1,0.32,1), box-shadow 0.25s, border-color 0.25s, color 0.2s;
     transform-style: preserve-3d;
     will-change: transform;
   }
@@ -1535,18 +1533,11 @@ function setupSoundToggles() {
 /* 인트로 키보드 애니메이션 */
 const introKeys = ['T','Y','P','E','R','U','S','H'];
 const introKbEl = document.getElementById('intro-kb');
-introKeys.forEach((k,i) => {
+introKeys.forEach(k => {
   const div = document.createElement('div');
-  div.className = 'ik'; div.textContent = k;
+  div.className = 'ik lit'; div.textContent = k;   // 애니메이션 없이 항상 켜진 상태
   introKbEl.appendChild(div);
-  setTimeout(() => div.classList.add('lit'), i * 130);
 });
-setInterval(() => {
-  const keys = introKbEl.querySelectorAll('.ik');
-  keys.forEach(k => k.classList.remove('lit'));
-  let i = 0;
-  const t = setInterval(() => { if (i < keys.length) { keys[i].classList.add('lit'); i++; } else clearInterval(t); }, 130);
-}, 2400);
 
 let gameMode = 'practice';
 
@@ -3089,176 +3080,7 @@ document.getElementById('ranking-toggle').addEventListener('click',()=>{
   if (kb) initKeyboard(kb);
 })();
 
-/* ── 인트로 TYPERUSH 키캡 틸트 효과 ── */
-(function(){
-  const MAX_ANGLE = 32;
-  const RADIUS    = 3.5;
-  const ENTER_DUR = '0.2s';
-  const LEAVE_DUR = '0.5s';
-  let rafId = null;
 
-  function tiltIntroKeys(mouseX, mouseY) {
-    const container = document.getElementById('intro-kb');
-    if (!container) return;
-    const rect = container.getBoundingClientRect();
-    const keys  = container.querySelectorAll('.ik');
-    if (!keys.length) return;
-
-    // 평균 키 크기
-    const firstR = keys[0].getBoundingClientRect();
-    const avgW = firstR.width;
-    const avgH = firstR.height;
-
-    keys.forEach(key => {
-      const kr   = key.getBoundingClientRect();
-      const cx   = kr.left + kr.width  / 2;
-      const cy   = kr.top  + kr.height / 2;
-      const distX = (mouseX - cx) / avgW;
-      const distY = (mouseY - cy) / avgH;
-      const dist  = Math.hypot(distX, distY);
-
-      if (dist <= RADIUS) {
-        const pct   = 1 - dist / RADIUS;
-        const angle = pct * MAX_ANGLE;
-        const rotX  = -(distY / (dist || 1)) * angle;
-        const rotY  =  (distX / (dist || 1)) * angle;
-        const glow  = pct * 0.5;
-
-        key.style.transition = `transform ${ENTER_DUR} cubic-bezier(0.23,1,0.32,1), box-shadow ${ENTER_DUR}, border-color ${ENTER_DUR}`;
-        key.style.transform  = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(${pct * 8}px)`;
-        key.style.borderColor = `rgba(var(--accent-r),var(--accent-g),var(--accent-b),${0.2 + glow})`;
-        key.style.boxShadow  = `0 0 ${Math.round(pct*18)}px rgba(var(--accent-r),var(--accent-g),var(--accent-b),${glow})`;
-        key.style.color      = `rgba(var(--accent-r),var(--accent-g),var(--accent-b),${0.35 + glow * 1.2})`;
-      } else {
-        key.style.transition = `transform ${LEAVE_DUR} cubic-bezier(0.23,1,0.32,1), box-shadow ${LEAVE_DUR}, border-color ${LEAVE_DUR}, color ${LEAVE_DUR}`;
-        key.style.transform  = 'rotateX(0deg) rotateY(0deg) translateZ(0px)';
-        key.style.borderColor = '';
-        key.style.boxShadow  = '';
-        key.style.color      = '';
-      }
-    });
-  }
-
-  function resetIntroKeys() {
-    const keys = document.querySelectorAll('#intro-kb .ik');
-    keys.forEach(key => {
-      key.style.transition = 'transform 0.5s cubic-bezier(0.23,1,0.32,1), box-shadow 0.5s, border-color 0.5s, color 0.5s';
-      key.style.transform  = 'rotateX(0deg) rotateY(0deg) translateZ(0px)';
-      key.style.borderColor = '';
-      key.style.boxShadow  = '';
-      key.style.color      = '';
-    });
-  }
-
-  document.addEventListener('pointermove', e => {
-    if (rafId) cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(() => tiltIntroKeys(e.clientX, e.clientY));
-  });
-  document.addEventListener('pointerleave', resetIntroKeys);
-})();
-
-/* ── TYPERUSH 로고 TiltedCard 효과 (Framer Motion → 순수 JS) ── */
-(function(){
-  const logo = document.querySelector('.intro-logo');
-  if (!logo) return;
-
-  // Spring 설정 (springValues: damping=30, stiffness=100, mass=2)
-  const ROTATE_AMPLITUDE = 14;
-  const SCALE_HOVER      = 1.08;
-  const DAMPING          = 30;
-  const STIFFNESS        = 100;
-  const MASS             = 2;
-
-  // Spring 시뮬레이터
-  function createSpring(damping, stiffness, mass) {
-    let current = 0, target = 0, velocity = 0;
-    return {
-      set(v) { target = v; },
-      get() { return current; },
-      tick(dt) {
-        const force    = -stiffness * (current - target);
-        const damping_ = -damping * velocity;
-        const accel    = (force + damping_) / mass;
-        velocity += accel * dt;
-        current  += velocity * dt;
-        return current;
-      },
-      reset(v = 0) { current = target = v; velocity = 0; }
-    };
-  }
-
-  const springRotX   = createSpring(DAMPING, STIFFNESS, MASS);
-  const springRotY   = createSpring(DAMPING, STIFFNESS, MASS);
-  const springScale  = createSpring(DAMPING, STIFFNESS, MASS);
-  springScale.reset(1);
-
-  let rafId   = null;
-  let isHover = false;
-  let lastY   = 0;
-
-  // 로고에 3D 스타일 초기 설정
-  logo.style.display        = 'inline-block';
-  logo.style.transformStyle = 'preserve-3d';
-  logo.style.willChange     = 'transform';
-  logo.style.cursor         = 'default';
-  logo.style.transition     = 'none';
-
-  function animate() {
-    const dt = 1 / 60;
-    const rX  = springRotX.tick(dt);
-    const rY  = springRotY.tick(dt);
-    const sc  = springScale.tick(dt);
-
-    logo.style.transform = `perspective(800px) rotateX(${rX}deg) rotateY(${rY}deg) scale(${sc})`;
-
-    // 모두 안정되면 중지
-    const stable = Math.abs(rX) < 0.01 && Math.abs(rY) < 0.01 && Math.abs(sc - (isHover ? SCALE_HOVER : 1)) < 0.001;
-    if (!stable || isHover) {
-      rafId = requestAnimationFrame(animate);
-    } else {
-      rafId = null;
-    }
-  }
-
-  function startAnim() {
-    if (rafId) return;
-    rafId = requestAnimationFrame(animate);
-  }
-
-  logo.addEventListener('mouseenter', () => {
-    isHover = true;
-    springScale.set(SCALE_HOVER);
-    startAnim();
-  });
-
-  logo.addEventListener('mouseleave', () => {
-    isHover = false;
-    springRotX.set(0);
-    springRotY.set(0);
-    springScale.set(1);
-    lastY = 0;
-    startAnim();
-  });
-
-  logo.addEventListener('mousemove', e => {
-    const rect    = logo.getBoundingClientRect();
-    const offsetX = e.clientX - rect.left  - rect.width  / 2;
-    const offsetY = e.clientY - rect.top   - rect.height / 2;
-
-    const rotX = (offsetY / (rect.height / 2)) * -ROTATE_AMPLITUDE;
-    const rotY = (offsetX / (rect.width  / 2)) *  ROTATE_AMPLITUDE;
-
-    springRotX.set(rotX);
-    springRotY.set(rotY);
-    lastY = offsetY;
-
-    startAnim();
-  });
-
-  // 캔버스는 더 이상 필요 없으므로 숨김
-  const oldCanvas = document.getElementById('logo-blur-canvas');
-  if (oldCanvas) oldCanvas.style.display = 'none';
-})();
 
 let selectedUserId = null;
 
